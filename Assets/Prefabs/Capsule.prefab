@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 92394770705885716}
   - component: {fileID: 34264478311340288}
   - component: {fileID: 5270949754999138394}
-  - component: {fileID: 5929292003436700089}
+  - component: {fileID: 6101873823252793082}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -120,7 +120,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &5929292003436700089
+--- !u!114 &6101873823252793082
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,6 +129,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3366499226998370555}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9ab66605d678dc4e9eb48fac9633c7e, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ab34ddb1d22c174eb8c1c8cf069b0a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZombieController
