@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 34264478311340288}
   - component: {fileID: 5270949754999138394}
   - component: {fileID: 6101873823252793082}
+  - component: {fileID: 7188360595594364360}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -132,3 +133,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab34ddb1d22c174eb8c1c8cf069b0a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZombieController
+--- !u!114 &7188360595594364360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3366499226998370555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff2129be31c3f6a48aaa92cfcdc13e20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZombieAI
+  attackRange: 0.6
+  attackCooldown: 1
