@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
@@ -37,11 +38,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Cooldown del dash
-        if (dashCooldownRemaining > 0f)
-        {
-            dashCooldownRemaining -= Time.fixedDeltaTime;
-        }
+        UpdateDashCooldown();
 
         if (isDashing)
         {
@@ -53,19 +50,20 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // Movimiento
+    // =============================
+    // INPUT
+    // =============================
+
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
 
-        // Evita que la diagonal sea más rápida
+        // Evita que diagonal sea más rápida
         moveInput = Vector2.ClampMagnitude(moveInput, 1f);
     }
 
-    // Espacio / Dash
     public void OnDash(InputValue value)
     {
-        // Solo cuando se presiona el botón
         if (!value.isPressed)
             return;
 
@@ -78,10 +76,18 @@ public class PlayerMovement : MonoBehaviour
         StartDash();
     }
 
+    // =============================
+    // MOVEMENT
+    // =============================
+
     private void Move()
     {
         rb.linearVelocity = moveInput * moveSpeed;
     }
+
+    // =============================
+    // DASH
+    // =============================
 
     private void StartDash()
     {
@@ -90,16 +96,12 @@ public class PlayerMovement : MonoBehaviour
         dashTimeRemaining = dashDuration;
         dashCooldownRemaining = dashCooldown;
 
-        // Si el jugador está moviéndose,
-        // hacemos dash hacia esa dirección.
         if (moveInput.sqrMagnitude > 0.01f)
         {
             dashDirection = moveInput.normalized;
         }
         else
         {
-            // Si está quieto, usa la última dirección
-            // hacia donde estaba mirando.
             dashDirection = facingDirection.normalized;
         }
     }
@@ -120,11 +122,20 @@ public class PlayerMovement : MonoBehaviour
     {
         isDashing = false;
 
-        // Lo detenemos al terminar.
-        // En el siguiente FixedUpdate volverá a
-        // tomar la velocidad normal del movimiento.
         rb.linearVelocity = Vector2.zero;
     }
+
+    private void UpdateDashCooldown()
+    {
+        if (dashCooldownRemaining > 0f)
+        {
+            dashCooldownRemaining -= Time.fixedDeltaTime;
+        }
+    }
+
+    // =============================
+    // FACING
+    // =============================
 
     private void UpdateFacingDirection()
     {
@@ -136,8 +147,9 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector2 Get8Direction(Vector2 direction)
     {
-        float angle = Mathf.Atan2(direction.y, direction.x)
-                      * Mathf.Rad2Deg;
+        float angle =
+            Mathf.Atan2(direction.y, direction.x)
+            * Mathf.Rad2Deg;
 
         angle = Mathf.Round(angle / 45f) * 45f;
 
