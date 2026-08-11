@@ -36,7 +36,10 @@ public class ZombieController : MonoBehaviour
 
     private void Die()
     {
-        // Aquí puedes disparar animación de muerte, drop de items, sumar puntos, etc.
+        if (ScoreManager.Instance != null)
+            ScoreManager.Instance.AddPoints(typeData.pointsValue);
+
+        // Aquí puedes disparar animación de muerte, drop de items, etc.
         OnZombieDied?.Invoke(this);
         poolManager.ReturnZombie(typeData, gameObject);
     }

@@ -15,6 +15,8 @@ public class ZombieTypeSO : ScriptableObject
     public float baseHealth = 30f;
     public float baseDamage = 5f;
     public float baseSpeed = 2f;
+    [Tooltip("Puntos que otorga al jugador al morir")]
+    public int pointsValue = 10;
 
     [Header("Escalado por oleada")]
     [Tooltip("Fracción de crecimiento por oleada, ej. 0.15 = +15% por oleada")]

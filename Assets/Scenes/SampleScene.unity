@@ -410,9 +410,11 @@ MonoBehaviour:
   - zombieType: {fileID: 11400000, guid: a24fd65a18969fb4982c64a764ff628a, type: 2}
     baseCount: 1
     countGrowthPerWave: 0
-  spawnPoints:
-  - {fileID: 1272261419}
-  - {fileID: 1946927203}
+  zones:
+  - zoneId: 
+    spawnPoints: []
+    startsUnlocked: 0
+    isUnlocked: 0
   delayBetweenSpawns: 0.4
   delayBetweenWaves: 5
 --- !u!4 &1567787125
