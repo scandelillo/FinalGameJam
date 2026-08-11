@@ -103,7 +103,7 @@ public class MeleeWeapon : Weapon
                     directionToTarget.normalized
                 );
 
-            // Está fuera del abanico.
+            // Está fuera de rango
             if (
                 angle >
                 attackAngle / 2f
@@ -118,8 +118,7 @@ public class MeleeWeapon : Weapon
             if (zombie == null)
                 continue;
 
-            // Por si el zombie tiene
-            // varios colliders.
+            
             if (hitZombies.Contains(zombie))
                 continue;
 
@@ -128,10 +127,8 @@ public class MeleeWeapon : Weapon
             zombie.TakeDamage(damage);
         }
     }
-
-    // ==========================
-    // DEBUG VISUAL
-    // ==========================
+  
+     // Gizzmos  
 
     private void OnDrawGizmosSelected()
     {

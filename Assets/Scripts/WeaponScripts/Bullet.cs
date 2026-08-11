@@ -73,8 +73,6 @@ public class Bullet : MonoBehaviour
         int otherLayer =
             1 << other.gameObject.layer;
 
-        // Si la capa no está configurada
-        // como impacto, ignoramos.
         if (
             (hitLayers.value & otherLayer)
             == 0
@@ -92,8 +90,6 @@ public class Bullet : MonoBehaviour
             );
         }
 
-        // Puede haber sido un zombie
-        // o una pared.
         ReturnToPool();
     }
 

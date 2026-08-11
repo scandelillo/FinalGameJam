@@ -50,9 +50,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // =============================
-    // INPUT
-    // =============================
 
     public void OnMove(InputValue value)
     {
@@ -76,18 +73,12 @@ public class PlayerMovement : MonoBehaviour
         StartDash();
     }
 
-    // =============================
-    // MOVEMENT
-    // =============================
 
     private void Move()
     {
         rb.linearVelocity = moveInput * moveSpeed;
     }
 
-    // =============================
-    // DASH
-    // =============================
 
     private void StartDash()
     {
@@ -132,10 +123,6 @@ public class PlayerMovement : MonoBehaviour
             dashCooldownRemaining -= Time.fixedDeltaTime;
         }
     }
-
-    // =============================
-    // FACING
-    // =============================
 
     private void UpdateFacingDirection()
     {

@@ -97,9 +97,6 @@ public class Firearm : Weapon
         }
     }
 
-    // ==========================
-    // ATTACK
-    // ==========================
 
     public override void Attack(
         Vector2 direction)
@@ -183,9 +180,9 @@ public class Firearm : Weapon
         );
     }
 
-    // ==========================
+    
     // RELOAD
-    // ==========================
+    
 
     public override void Reload()
     {
