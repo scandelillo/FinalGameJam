@@ -17,6 +17,7 @@ MonoBehaviour:
   baseHealth: 50
   baseDamage: 5
   baseSpeed: 1
+  pointsValue: 30
   healthGrowthPerWave: 0.15
   damageGrowthPerWave: 0.1
   speedGrowthPerWave: 0.02
