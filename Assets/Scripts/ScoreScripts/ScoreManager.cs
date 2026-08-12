@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Singleton simple que guarda los puntos del jugador. ZombieController le suma
 /// puntos al matar zombies; DoorUnlockable le pregunta si puede gastar puntos
-/// para abrir una puerta.
+/// para abrir una puerta; más adelante la tienda hará lo mismo.
 /// </summary>
 public class ScoreManager : MonoBehaviour
 {
@@ -30,6 +30,8 @@ public class ScoreManager : MonoBehaviour
     {
         CurrentPoints += amount;
         OnPointsChanged?.Invoke(CurrentPoints);
+
+        Debug.Log($"+{amount} puntos (total: {CurrentPoints})");
     }
 
     public bool TrySpendPoints(int amount)
@@ -38,6 +40,8 @@ public class ScoreManager : MonoBehaviour
 
         CurrentPoints -= amount;
         OnPointsChanged?.Invoke(CurrentPoints);
+
+        Debug.Log($"-{amount} puntos gastados (total: {CurrentPoints})");
         return true;
     }
 }
