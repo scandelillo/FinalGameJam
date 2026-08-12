@@ -79,17 +79,20 @@ public class Bullet : MonoBehaviour
         )
             return;
 
-        ZombieController zombie =
+        // Busca Idamageble
+        IDamageable damageable =
             other.GetComponentInParent
-            <ZombieController>();
+                <IDamageable>();
 
-        if (zombie != null)
+        if (damageable != null)
         {
-            zombie.TakeDamage(
+            damageable.TakeDamage(
                 damage
             );
         }
 
+        // Aunque sea una pared sin IDamageable,
+        // la bala impacta y vuelve al pool
         ReturnToPool();
     }
 
