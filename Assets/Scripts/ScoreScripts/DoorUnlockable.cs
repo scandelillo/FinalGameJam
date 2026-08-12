@@ -5,6 +5,8 @@ using UnityEngine;
 /// - uno IsTrigger=true grande, para detectar "jugador cerca" (rango de interacción)
 /// - uno IsTrigger=false que bloquea físicamente el paso, se desactiva al abrir
 /// El jugador debe tener el tag "Player" para que la detección funcione.
+/// No lee input directamente: escucha PlayerInteraction.OnInteractPressed
+/// y solo actúa si el jugador está en su rango.
 /// </summary>
 public class DoorUnlockable : MonoBehaviour
 {
@@ -16,7 +18,6 @@ public class DoorUnlockable : MonoBehaviour
     [Header("Referencias físicas")]
     [Tooltip("Collider2D (no trigger) que bloquea el paso; se desactiva al abrir")]
     [SerializeField] private Collider2D physicalBlocker;
-    [SerializeField] private KeyCode interactKey = KeyCode.E;
 
     [Header("Feedback (opcional)")]
     [SerializeField] private Animator doorAnimator;
@@ -26,12 +27,21 @@ public class DoorUnlockable : MonoBehaviour
     private bool playerInRange;
     private bool isOpen;
 
-    private void Update()
+    private void OnEnable()
+    {
+        PlayerInteraction.OnInteractPressed += HandleInteractPressed;
+    }
+
+    private void OnDisable()
+    {
+        PlayerInteraction.OnInteractPressed -= HandleInteractPressed;
+    }
+
+    private void HandleInteractPressed()
     {
         if (isOpen || !playerInRange) return;
 
-        if (Input.GetKeyDown(interactKey))
-            TryOpen();
+        TryOpen();
     }
 
     private void TryOpen()
