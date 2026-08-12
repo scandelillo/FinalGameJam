@@ -67,11 +67,15 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
+        // Calculamos constantemente hacia dónde apunta el mouse
         UpdateAimDirection();
+
+        // Informamos constantemente al arma actual
+        UpdateWeaponAim();
     }
 
     // ==========================
-    // AIM INPUT
+    // AIM
     // ==========================
 
     public void OnAim(InputValue value)
@@ -79,80 +83,6 @@ public class PlayerCombat : MonoBehaviour
         mouseScreenPosition =
             value.Get<Vector2>();
     }
-
-    // ==========================
-    // ATTACK
-    // ==========================
-
-    public void OnAttack(InputValue value)
-    {
-        if (!value.isPressed)
-            return;
-
-        // No atacamos durante el dash.
-        if (
-            movement != null &&
-            movement.IsDashing
-        )
-            return;
-
-        if (CurrentWeapon == null)
-            return;
-
-        CurrentWeapon.Attack(
-            aimDirection
-        );
-    }
-
-    // ==========================
-    // RELOAD
-    // ==========================
-
-    public void OnReload(InputValue value)
-    {
-        if (!value.isPressed)
-            return;
-
-        if (CurrentWeapon == null)
-            return;
-
-        CurrentWeapon.Reload();
-    }
-
-    // ==========================
-    // SLOT INPUT
-    // ==========================
-
-    public void OnSlot1(InputValue value)
-    {
-        if (value.isPressed)
-            SelectSlot(0);
-    }
-
-    public void OnSlot2(InputValue value)
-    {
-        if (value.isPressed)
-            SelectSlot(1);
-    }
-
-    public void OnSlot3(InputValue value)
-    {
-        if (value.isPressed)
-            SelectSlot(2);
-    }
-
-    public void OnPreviousWeapon(
-        InputValue value)
-    {
-        if (!value.isPressed)
-            return;
-
-        SwitchToPreviousWeapon();
-    }
-
-    // ==========================
-    // AIM
-    // ==========================
 
     private void UpdateAimDirection()
     {
@@ -186,6 +116,86 @@ public class PlayerCombat : MonoBehaviour
             aimDirection =
                 direction.normalized;
         }
+    }
+
+    private void UpdateWeaponAim()
+    {
+        if (CurrentWeapon == null)
+            return;
+
+        CurrentWeapon.SetAimDirection(
+            aimDirection
+        );
+    }
+
+    // ==========================
+    // ATTACK
+    // ==========================
+
+    public void OnAttack(InputValue value)
+    {
+        if (!value.isPressed)
+            return;
+
+        if (
+            movement != null &&
+            movement.IsDashing
+        )
+            return;
+
+        if (CurrentWeapon == null)
+            return;
+
+        // AQUÍ es cuando realmente atacamos.
+        CurrentWeapon.Attack(
+            aimDirection
+        );
+    }
+
+    // ==========================
+    // RELOAD
+    // ==========================
+
+    public void OnReload(InputValue value)
+    {
+        if (!value.isPressed)
+            return;
+
+        if (CurrentWeapon == null)
+            return;
+
+        CurrentWeapon.Reload();
+    }
+
+    // ==========================
+    // SLOTS
+    // ==========================
+
+    public void OnSlot1(InputValue value)
+    {
+        if (value.isPressed)
+            SelectSlot(0);
+    }
+
+    public void OnSlot2(InputValue value)
+    {
+        if (value.isPressed)
+            SelectSlot(1);
+    }
+
+    public void OnSlot3(InputValue value)
+    {
+        if (value.isPressed)
+            SelectSlot(2);
+    }
+
+    public void OnPreviousWeapon(
+        InputValue value)
+    {
+        if (!value.isPressed)
+            return;
+
+        SwitchToPreviousWeapon();
     }
 
     // ==========================
@@ -243,6 +253,11 @@ public class PlayerCombat : MonoBehaviour
         currentSlot = newSlot;
 
         CurrentWeapon.SetEquipped(true);
+
+        // Informamos al arma actual de la dirección del mouse.
+        CurrentWeapon.SetAimDirection(
+            aimDirection
+        );
     }
 
     private void SwitchToPreviousWeapon()
@@ -266,5 +281,9 @@ public class PlayerCombat : MonoBehaviour
         previousSlot = temp;
 
         CurrentWeapon.SetEquipped(true);
+
+        CurrentWeapon.SetAimDirection(
+            aimDirection
+        );
     }
 }

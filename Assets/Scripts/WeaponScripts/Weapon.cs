@@ -18,10 +18,15 @@ public abstract class Weapon : MonoBehaviour
         }
     }
 
+    // Se actualiza constantemente con la dirección del mouse
+    public virtual void SetAimDirection(Vector2 direction)
+    {
+    }
+
     public abstract void Attack(Vector2 direction);
 
     public virtual void Reload()
     {
-        // Las armas melee no recargan.
+        // Melee no hace nada
     }
 }

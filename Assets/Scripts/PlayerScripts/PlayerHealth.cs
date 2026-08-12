@@ -77,15 +77,13 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private void Die()
     {
-    if (IsDead)
-        return;
+        if (IsDead)
+            return;
 
-    IsDead = true;
+        IsDead = true;
 
-    Debug.Log("MUERTO");
+        Debug.Log("MUERTO");
 
-    OnPlayerDied?.Invoke();
-
-    Time.timeScale = 0f;
-  }
+        OnPlayerDied?.Invoke();
+    }
 }

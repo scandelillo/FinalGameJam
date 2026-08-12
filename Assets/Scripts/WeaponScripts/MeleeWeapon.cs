@@ -8,7 +8,7 @@ public class MeleeWeapon : Weapon
     private float damage = 30f;
 
     [SerializeField]
-    private float range = 1.2f;
+    private float range = 2f;
 
     [Tooltip("Ángulo TOTAL del abanico")]
     [SerializeField]
@@ -27,12 +27,13 @@ public class MeleeWeapon : Weapon
 
     private float cooldownRemaining;
 
-    private Vector2 lastAttackDirection =
+    // Ahora esta dirección se actualiza todo el tiempo
+    private Vector2 currentAimDirection =
         Vector2.right;
 
-    private readonly HashSet<ZombieController>
-        hitZombies =
-            new HashSet<ZombieController>();
+    private readonly HashSet<IDamageable>
+        hitTargets =
+            new HashSet<IDamageable>();
 
     private void Update()
     {
@@ -42,6 +43,24 @@ public class MeleeWeapon : Weapon
                 Time.deltaTime;
         }
     }
+
+    // ==========================
+    // AIM
+    // ==========================
+
+    public override void SetAimDirection(
+        Vector2 direction)
+    {
+        if (direction.sqrMagnitude < 0.001f)
+            return;
+
+        currentAimDirection =
+            direction.normalized;
+    }
+
+    // ==========================
+    // ATTACK
+    // ==========================
 
     public override void Attack(
         Vector2 direction)
@@ -56,9 +75,6 @@ public class MeleeWeapon : Weapon
 
         cooldownRemaining =
             attackCooldown;
-
-        lastAttackDirection =
-            direction;
 
         PerformMeleeAttack(direction);
     }
@@ -78,7 +94,7 @@ public class MeleeWeapon : Weapon
                 zombieLayers
             );
 
-        hitZombies.Clear();
+        hitTargets.Clear();
 
         foreach (
             Collider2D targetCollider
@@ -103,32 +119,44 @@ public class MeleeWeapon : Weapon
                     directionToTarget.normalized
                 );
 
-            // Está fuera de rango
+            
             if (
                 angle >
                 attackAngle / 2f
             )
                 continue;
 
-            ZombieController zombie =
+            // Buscamos cualquier IDamageable.
+            IDamageable damageable =
                 targetCollider
                     .GetComponentInParent
-                    <ZombieController>();
+                    <IDamageable>();
 
-            if (zombie == null)
+            if (damageable == null)
                 continue;
 
-            
-            if (hitZombies.Contains(zombie))
+            // Evitamos daño doble si el mismo
+            // objetivo tiene varios colliders.
+            if (
+                hitTargets.Contains(
+                    damageable
+                )
+            )
                 continue;
 
-            hitZombies.Add(zombie);
+            hitTargets.Add(
+                damageable
+            );
 
-            zombie.TakeDamage(damage);
+            damageable.TakeDamage(
+                damage
+            );
         }
     }
-  
-     // Gizzmos  
+
+    // ==========================
+    // GIZMOS
+    // ==========================
 
     private void OnDrawGizmosSelected()
     {
@@ -142,26 +170,30 @@ public class MeleeWeapon : Weapon
             range
         );
 
+        // usamos currentAimDirection,
+        // que se actualiza todos los frames.
         Vector2 left =
             RotateVector(
-                lastAttackDirection,
+                currentAimDirection,
                 -attackAngle / 2f
             );
 
         Vector2 right =
             RotateVector(
-                lastAttackDirection,
+                currentAimDirection,
                 attackAngle / 2f
             );
 
         Gizmos.DrawLine(
             origin,
-            origin + (Vector3)(left * range)
+            origin +
+            (Vector3)(left * range)
         );
 
         Gizmos.DrawLine(
             origin,
-            origin + (Vector3)(right * range)
+            origin +
+            (Vector3)(right * range)
         );
     }
 
