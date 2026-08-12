@@ -3,46 +3,63 @@ using UnityEngine;
 
 public class Firearm : Weapon
 {
+    // ==========================
+    // BULLET / POOL
+    // ==========================
+
     [Header("Bullet")]
-    [SerializeField]
-    private Bullet bulletPrefab;
+    [SerializeField] private Bullet bulletPrefab;
 
-    [SerializeField]
-    private Transform bulletPoolParent;
+    [SerializeField] private Transform bulletPoolParent;
 
-    [SerializeField]
-    private int initialBulletPoolSize = 20;
+    [SerializeField] private int initialBulletPoolSize = 20;
+
+    // ==========================
+    // BULLET STATS
+    // ==========================
 
     [Header("Bullet Stats")]
-    [SerializeField]
-    private float bulletDamage = 20f;
+    [SerializeField] private float bulletDamage = 20f;
 
-    [SerializeField]
-    private float bulletSpeed = 12f;
+    [SerializeField] private float bulletSpeed = 12f;
 
-    [SerializeField]
-    private float bulletLifeTime = 3f;
+    [SerializeField] private float bulletLifeTime = 3f;
+
+    // ==========================
+    // FIRE
+    // ==========================
 
     [Header("Fire")]
-    [SerializeField]
-    private float fireCooldown = 0.2f;
 
-    [SerializeField]
-    private float bulletSpawnDistance = 0.6f;
+    // Punto real desde donde saldrá la bala.
+    [SerializeField] private Transform firePoint;
+
+    [SerializeField] private float fireCooldown = 0.2f;
+
+    // Se usa solo si FirePoint no está asignado.
+    [SerializeField] private float bulletSpawnDistance = 0.6f;
+
+    // ==========================
+    // AMMO
+    // ==========================
 
     [Header("Ammo")]
-    [SerializeField]
-    private int magazineSize = 6;
+    [SerializeField] private int magazineSize = 6;
 
-    [SerializeField]
-    private int reserveAmmo = 24;
+    [SerializeField] private int reserveAmmo = 24;
 
-    [SerializeField]
-    private float reloadTime = 1.2f;
+    [SerializeField] private float reloadTime = 1.2f;
+
+    // ==========================
+    // COLLISION
+    // ==========================
 
     [Header("Collision")]
-    [SerializeField]
-    private LayerMask bulletHitLayers;
+    [SerializeField] private LayerMask bulletHitLayers;
+
+    // ==========================
+    // RUNTIME
+    // ==========================
 
     private ObjectPool bulletPool;
 
@@ -51,6 +68,10 @@ public class Firearm : Weapon
     private float fireCooldownRemaining;
 
     private bool isReloading;
+
+    // ==========================
+    // PUBLIC DATA
+    // ==========================
 
     public int CurrentAmmo =>
         currentAmmo;
@@ -64,10 +85,13 @@ public class Firearm : Weapon
     public bool IsReloading =>
         isReloading;
 
+    // ==========================
+    // UNITY
+    // ==========================
+
     private void Awake()
     {
-        currentAmmo =
-            magazineSize;
+        currentAmmo = magazineSize;
 
         if (bulletPrefab == null)
         {
@@ -78,46 +102,40 @@ public class Firearm : Weapon
             return;
         }
 
-        bulletPool =
-            new ObjectPool(
-                bulletPrefab.gameObject,
-                initialBulletPoolSize,
-                bulletPoolParent
-            );
+        bulletPool = new ObjectPool(
+            bulletPrefab.gameObject,
+            initialBulletPoolSize,
+            bulletPoolParent
+        );
     }
 
     private void Update()
     {
-        if (
-            fireCooldownRemaining > 0f
-        )
+        if (fireCooldownRemaining > 0f)
         {
-            fireCooldownRemaining -=
-                Time.deltaTime;
+            fireCooldownRemaining -= Time.deltaTime;
         }
     }
 
+    // ==========================
+    // ATTACK
+    // ==========================
 
-    public override void Attack(
-        Vector2 direction)
+    public override void Attack(Vector2 direction)
     {
         if (isReloading)
             return;
 
-        if (
-            fireCooldownRemaining > 0f
-        )
+        if (fireCooldownRemaining > 0f)
             return;
 
-        if (
-            direction.sqrMagnitude < 0.001f
-        )
+        if (direction.sqrMagnitude < 0.001f)
             return;
 
+        // Sin balas en cargador.
         if (currentAmmo <= 0)
         {
             StartReload();
-
             return;
         }
 
@@ -129,18 +147,23 @@ public class Firearm : Weapon
         Fire(direction);
     }
 
-    private void Fire(
-        Vector2 direction)
+    // ==========================
+    // FIRE
+    // ==========================
+
+    private void Fire(Vector2 direction)
     {
         fireCooldownRemaining =
             fireCooldown;
 
         currentAmmo--;
 
+        // Si existe FirePoint usamos su posición
         Vector2 spawnPosition =
-            (Vector2)transform.position
-            + direction
-            * bulletSpawnDistance;
+            firePoint != null
+                ? (Vector2)firePoint.position
+                : (Vector2)transform.position
+                    + direction * bulletSpawnDistance;
 
         GameObject bulletObject =
             bulletPool.Get(
@@ -180,9 +203,9 @@ public class Firearm : Weapon
         );
     }
 
-    
+    // ==========================
     // RELOAD
-    
+    // ==========================
 
     public override void Reload()
     {
@@ -194,11 +217,11 @@ public class Firearm : Weapon
         if (isReloading)
             return;
 
-        if (
-            currentAmmo >= magazineSize
-        )
+        // Cargador lleno.
+        if (currentAmmo >= magazineSize)
             return;
 
+        // Sin munición de reserva.
         if (reserveAmmo <= 0)
             return;
 
@@ -213,14 +236,12 @@ public class Firearm : Weapon
 
         Debug.Log("Reloading...");
 
-        yield return
-            new WaitForSeconds(
-                reloadTime
-            );
+        yield return new WaitForSeconds(
+            reloadTime
+        );
 
         int missingAmmo =
-            magazineSize
-            - currentAmmo;
+            magazineSize - currentAmmo;
 
         int amountToReload =
             Mathf.Min(
@@ -228,11 +249,9 @@ public class Firearm : Weapon
                 reserveAmmo
             );
 
-        currentAmmo +=
-            amountToReload;
+        currentAmmo += amountToReload;
 
-        reserveAmmo -=
-            amountToReload;
+        reserveAmmo -= amountToReload;
 
         isReloading = false;
 
