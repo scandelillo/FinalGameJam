@@ -3,12 +3,9 @@ using UnityEngine;
 
 public class Firearm : Weapon
 {
-    
     [Header("Aim")]
     [SerializeField] private Transform aimPivot;
 
-    
-    // BULLET / POOL
 
     [Header("Bullet")]
     [SerializeField] private Bullet bulletPrefab;
@@ -26,26 +23,27 @@ public class Firearm : Weapon
 
     [Header("Fire")]
 
-    // Punto exacto desde donde sale la bala.
+    // Punto exacto desde donde sale la bala
     [SerializeField] private Transform firePoint;
 
     [SerializeField] private float fireCooldown = 0.2f;
 
+    // Respaldo si FirePoint no está asignado.
     [SerializeField] private float bulletSpawnDistance = 0.6f;
 
-    // ==========================
-    // AMMO
-    // ==========================
+    
 
     [Header("Ammo")]
     [SerializeField] private int magazineSize = 6;
     [SerializeField] private int reserveAmmo = 24;
     [SerializeField] private float reloadTime = 1.2f;
 
+    
 
     [Header("Collision")]
     [SerializeField] private LayerMask bulletHitLayers;
 
+    
 
     private ObjectPool bulletPool;
 
@@ -55,15 +53,13 @@ public class Firearm : Weapon
 
     private bool isReloading;
 
-    // ==========================
-    // PUBLIC DATA
-    // ==========================
 
     public int CurrentAmmo => currentAmmo;
     public int ReserveAmmo => reserveAmmo;
     public int MagazineSize => magazineSize;
     public bool IsReloading => isReloading;
 
+    
 
     private void Awake()
     {
