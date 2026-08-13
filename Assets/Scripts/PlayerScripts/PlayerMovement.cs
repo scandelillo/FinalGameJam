@@ -33,12 +33,15 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         if (animator == null)
-            animator = GetComponent<Animator>();    
+            animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
         UpdateFacingDirection();
+
+        if (animator != null)
+            animator.SetFloat("Speed", moveInput.magnitude);
     }
 
     private void FixedUpdate()

@@ -1,22 +1,10 @@
 fileFormatVersion: 2
-guid: 2494091ecd748e643b118ef9fc08c421
+guid: 486efb77bbd50e14f912013f949be95a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6567847219106223319
-    second: Sprite_sheet_attack_EN_0
-  - first:
-      213: 8574338402729065598
-    second: Sprite_sheet_attack_EN_1
-  - first:
-      213: 7396732660538325415
-    second: Sprite_sheet_attack_EN_2
-  - first:
-      213: -8723482644363051666
-    second: Sprite_sheet_attack_EN_3
-  - first:
-      213: 8630609570031694779
-    second: Sprite_sheet_attack_EN_4
+      213: 2208703988740019828
+    second: Bullet_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -58,12 +46,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 24
+  spritePixelsToUnits: 7
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -138,111 +126,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Z_attack_0
+      name: Bullet_0
       rect:
         serializedVersion: 2
-        x: 8
-        y: 10
-        width: 26
-        height: 39
+        x: 0
+        y: 1
+        width: 6
+        height: 6
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7d41dd17f3ea52b50800000000000000
-      internalID: 6567847219106223319
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Z_attack_1
-      rect:
-        serializedVersion: 2
-        x: 53
-        y: 8
-        width: 25
-        height: 35
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e7cf7a6395b2ef670800000000000000
-      internalID: 8574338402729065598
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Z_attack_2
-      rect:
-        serializedVersion: 2
-        x: 101
-        y: 9
-        width: 28
-        height: 35
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7a9bae94a2976a660800000000000000
-      internalID: 7396732660538325415
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Z_attack_3
-      rect:
-        serializedVersion: 2
-        x: 147
-        y: 8
-        width: 43
-        height: 37
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e6d747201c6ffe680800000000000000
-      internalID: -8723482644363051666
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Z_attack_4
-      rect:
-        serializedVersion: 2
-        x: 203
-        y: 8
-        width: 28
-        height: 38
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bb373d05da516c770800000000000000
-      internalID: 8630609570031694779
+      spriteID: 47656d65394e6ae10800000000000000
+      internalID: 2208703988740019828
       vertices: []
       indices: 
       edges: []
@@ -251,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: dc91b7254efb3c14b985e09beb04a88f
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -261,11 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Z_attack_0: 6567847219106223319
-      Z_attack_1: 8574338402729065598
-      Z_attack_2: 7396732660538325415
-      Z_attack_3: -8723482644363051666
-      Z_attack_4: 8630609570031694779
+      Bullet_0: 2208703988740019828
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1185,8 +1185,8 @@ Transform:
   m_GameObject: {fileID: 1221047607}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.7, y: 0.2, z: 0}
-  m_LocalScale: {x: 5.665228, y: 1.1503, z: 1.1503}
+  m_LocalPosition: {x: 0.515, y: 0.032, z: 0}
+  m_LocalScale: {x: 4.077831, y: 3.7396252, z: 1.1503}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1325884903}
@@ -1240,12 +1240,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 9b4d5aa6482854f448df8a75ab48eb7e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.16, y: 0.16}
+  m_Size: {x: 4.75, y: 4.75}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1793,9 +1793,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 3.5
   dashSpeed: 9
-  dashDuration: 0.25
+  dashDuration: 0.3
   dashCooldown: 0.5
-  animator: {fileID: 0}
+  animator: {fileID: 1860292554}
 --- !u!50 &1860292546
 Rigidbody2D:
   serializedVersion: 5
@@ -1872,7 +1872,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: -5777890000814999963, guid: 007f966aa5d93ab488d733ac3109e18a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2017,7 +2017,7 @@ Animator:
   m_GameObject: {fileID: 1860292544}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: c9580beaea854d04c94943b1aab92385, type: 2}
+  m_Controller: {fileID: 9100000, guid: fe352b489dd6d2344a187bc0f7f88133, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
