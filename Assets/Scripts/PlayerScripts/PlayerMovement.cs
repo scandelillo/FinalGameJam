@@ -33,15 +33,15 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         if (animator == null)
-            animator = GetComponent<Animator>();
+            animator = GetComponent<Animator>();    
     }
 
     private void Update()
     {
-        UpdateFacingDirection();
-
-        if (animator != null)
-            animator.SetFloat("Speed", moveInput.magnitude);
+        if (!isDashing)
+        {
+            UpdateFacingDirection();
+        }
     }
 
     private void FixedUpdate()
@@ -89,24 +89,30 @@ public class PlayerMovement : MonoBehaviour
 
 
     private void StartDash()
+{
+    isDashing = true;
+
+    dashTimeRemaining = dashDuration;
+    dashCooldownRemaining = dashCooldown;
+
+    if (moveInput.sqrMagnitude > 0.01f)
     {
-        isDashing = true;
-
-        dashTimeRemaining = dashDuration;
-        dashCooldownRemaining = dashCooldown;
-
-        if (moveInput.sqrMagnitude > 0.01f)
-        {
-            dashDirection = moveInput.normalized;
-        }
-        else
-        {
-            dashDirection = facingDirection.normalized;
-        }
-
-        if (animator != null)
-            animator.SetBool("IsDashing", true);
+        dashDirection = moveInput.normalized;
     }
+    else
+    {
+        dashDirection = facingDirection.normalized;
+    }
+
+    // Congela visualmente la dirección del personaje
+    // en la dirección en la que comenzó el dash.
+    facingDirection = Get8Direction(dashDirection);
+
+    if (animator != null)
+    {
+        animator.SetBool("IsDashing", true);
+    }
+}
 
     private void DashMovement()
     {
