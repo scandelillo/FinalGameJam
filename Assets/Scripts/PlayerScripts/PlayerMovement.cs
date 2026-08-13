@@ -12,6 +12,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashDuration = 0.15f;
     [SerializeField] private float dashCooldown = 0.5f;
 
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+
     private Rigidbody2D rb;
 
     private Vector2 moveInput;
@@ -29,6 +32,8 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        if (animator == null)
+            animator = GetComponent<Animator>();    
     }
 
     private void Update()
@@ -95,6 +100,9 @@ public class PlayerMovement : MonoBehaviour
         {
             dashDirection = facingDirection.normalized;
         }
+
+        if (animator != null)
+            animator.SetBool("IsDashing", true);
     }
 
     private void DashMovement()
@@ -114,6 +122,8 @@ public class PlayerMovement : MonoBehaviour
         isDashing = false;
 
         rb.linearVelocity = Vector2.zero;
+        if (animator != null)
+            animator.SetBool("IsDashing", false);
     }
 
     private void UpdateDashCooldown()
