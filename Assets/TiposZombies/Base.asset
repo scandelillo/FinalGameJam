@@ -17,7 +17,12 @@ MonoBehaviour:
   baseHealth: 30
   baseDamage: 5
   baseSpeed: 3
+  pointsValue: 10
   healthGrowthPerWave: 0.15
   damageGrowthPerWave: 0.1
   speedGrowthPerWave: 0.02
   speedCap: 4
+  ammoDropChance: 0.15
+  ammoPickupPrefab: {fileID: 7265642194213479997, guid: 3b4498c43cdbb664a803a8038a5c5195, type: 3}
+  minAmmoDrop: 6
+  maxAmmoDrop: 12

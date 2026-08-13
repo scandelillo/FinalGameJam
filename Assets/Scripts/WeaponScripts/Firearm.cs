@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Firearm : Weapon
+public class Firearm : Weapon, IAmmoContainer
 {
     [Header("Aim")]
     [SerializeField] private Transform aimPivot;
@@ -12,14 +12,14 @@ public class Firearm : Weapon
     [SerializeField] private Transform bulletPoolParent;
     [SerializeField] private int initialBulletPoolSize = 20;
 
-    
+
 
     [Header("Bullet Stats")]
     [SerializeField] private float bulletDamage = 20f;
     [SerializeField] private float bulletSpeed = 12f;
     [SerializeField] private float bulletLifeTime = 3f;
 
-    
+
 
     [Header("Fire")]
 
@@ -31,19 +31,19 @@ public class Firearm : Weapon
     // Respaldo si FirePoint no está asignado.
     [SerializeField] private float bulletSpawnDistance = 0.6f;
 
-    
+
 
     [Header("Ammo")]
     [SerializeField] private int magazineSize = 6;
     [SerializeField] private int reserveAmmo = 24;
     [SerializeField] private float reloadTime = 1.2f;
 
-    
+
 
     [Header("Collision")]
     [SerializeField] private LayerMask bulletHitLayers;
 
-    
+
 
     private ObjectPool bulletPool;
 
@@ -59,7 +59,7 @@ public class Firearm : Weapon
     public int MagazineSize => magazineSize;
     public bool IsReloading => isReloading;
 
-    
+
 
     private void Awake()
     {
@@ -252,6 +252,22 @@ public class Firearm : Weapon
         Debug.Log(
             $"Reloaded: " +
             $"{currentAmmo}/{reserveAmmo}"
+        );
+    }
+
+    // ==========================
+    // AMMO PICKUP (IAmmoContainer)
+    // ==========================
+
+    public void AddReserveAmmo(int amount)
+    {
+        if (amount <= 0) return;
+
+        reserveAmmo += amount;
+
+        Debug.Log(
+            $"+{amount} munición de reserva " +
+            $"({reserveAmmo} total)"
         );
     }
 }

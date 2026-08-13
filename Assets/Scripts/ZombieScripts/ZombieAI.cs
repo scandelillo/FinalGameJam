@@ -13,6 +13,9 @@ public class ZombieAI : MonoBehaviour
     [SerializeField] private float attackRange = 0.6f;
     [SerializeField] private float attackCooldown = 1f;
 
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+
     private Rigidbody2D rb;
     private ZombieController zombieController;
     private Transform player;
@@ -22,6 +25,9 @@ public class ZombieAI : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         zombieController = GetComponent<ZombieController>();
+
+        if (animator == null)
+            animator = GetComponent<Animator>();
     }
 
     private void OnEnable()
@@ -53,6 +59,10 @@ public class ZombieAI : MonoBehaviour
         else
         {
             rb.linearVelocity = Vector2.zero;
+
+            if (animator != null)
+                animator.SetFloat("Speed", 0f);
+
             TryAttack();
         }
     }
@@ -61,6 +71,9 @@ public class ZombieAI : MonoBehaviour
     {
         Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
         rb.linearVelocity = direction * zombieController.Speed;
+
+        if (animator != null)
+            animator.SetFloat("Speed", zombieController.Speed);
     }
 
     private void TryAttack()
@@ -68,6 +81,9 @@ public class ZombieAI : MonoBehaviour
         if (attackCooldownRemaining > 0f) return;
 
         attackCooldownRemaining = attackCooldown;
+
+        if (animator != null)
+            animator.SetTrigger("Attack");
 
         if (player.TryGetComponent(out IDamageable damageable))
             damageable.TakeDamage(zombieController.Damage);
