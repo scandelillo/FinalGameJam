@@ -6,7 +6,7 @@ using UnityEngine;
 /// recibe sus stats vía Initialize() y avisa con un evento cuando muere,
 /// para que el pool lo recicle y el spawner descuente el contador de oleada.
 /// </summary>
-public class ZombieController : MonoBehaviour, IDamageable
+public class ZombieController : MonoBehaviour
 {
     public event Action<ZombieController> OnZombieDied;
 
@@ -29,6 +29,8 @@ public class ZombieController : MonoBehaviour, IDamageable
 
     public void TakeDamage(float amount)
     {
+        Debug.Log($"[DEBUG] {name} recibió {amount} de daño. Vida restante: {CurrentHealth - amount}");
+
         CurrentHealth -= amount;
         if (CurrentHealth <= 0f)
             Die();
@@ -36,11 +38,30 @@ public class ZombieController : MonoBehaviour, IDamageable
 
     private void Die()
     {
+        Debug.Log($"[DEBUG] {name} está muriendo, ejecutando Die()");
+
         if (ScoreManager.Instance != null)
             ScoreManager.Instance.AddPoints(typeData.pointsValue);
 
-        // Aquí puedes disparar animación de muerte, drop de items, etc.
+        TryDropAmmo();
+
+        Debug.Log($"[DEBUG] {name} terminó Die(), devolviendo al pool");
+
+        // Aquí puedes disparar animación de muerte, etc.
         OnZombieDied?.Invoke(this);
         poolManager.ReturnZombie(typeData, gameObject);
+    }
+
+    private void TryDropAmmo()
+    {
+        if (typeData.ammoPickupPrefab == null) return;
+        if (UnityEngine.Random.value > typeData.ammoDropChance) return;
+
+        int amount = UnityEngine.Random.Range(typeData.minAmmoDrop, typeData.maxAmmoDrop + 1);
+
+        GameObject pickupObj = Instantiate(typeData.ammoPickupPrefab, transform.position, Quaternion.identity);
+
+        if (pickupObj.TryGetComponent(out AmmoPickup pickup))
+            pickup.SetAmount(amount);
     }
 }

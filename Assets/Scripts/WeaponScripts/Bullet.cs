@@ -70,6 +70,8 @@ public class Bullet : MonoBehaviour
         if (!isActive)
             return;
 
+        Debug.Log($"[DEBUG BALA] Toqué a: {other.gameObject.name}, layer: {other.gameObject.layer}");
+
         int otherLayer =
             1 << other.gameObject.layer;
 
@@ -79,20 +81,19 @@ public class Bullet : MonoBehaviour
         )
             return;
 
-        // Busca Idamageble
-        IDamageable damageable =
+        ZombieController zombie =
             other.GetComponentInParent
-                <IDamageable>();
+            <ZombieController>();
 
-        if (damageable != null)
+        Debug.Log($"[DEBUG BALA] ¿Encontró ZombieController?: {zombie != null}");
+
+        if (zombie != null)
         {
-            damageable.TakeDamage(
+            zombie.TakeDamage(
                 damage
             );
         }
 
-        // Aunque sea una pared sin IDamageable,
-        // la bala impacta y vuelve al pool
         ReturnToPool();
     }
 
