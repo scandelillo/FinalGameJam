@@ -3,63 +3,47 @@ using UnityEngine;
 
 public class Firearm : Weapon
 {
-    // ==========================
-    // BULLET / POOL
-    // ==========================
+    [Header("Aim")]
+    [SerializeField] private Transform aimPivot;
+
 
     [Header("Bullet")]
     [SerializeField] private Bullet bulletPrefab;
-
     [SerializeField] private Transform bulletPoolParent;
-
     [SerializeField] private int initialBulletPoolSize = 20;
 
-    // ==========================
-    // BULLET STATS
-    // ==========================
+    
 
     [Header("Bullet Stats")]
     [SerializeField] private float bulletDamage = 20f;
-
     [SerializeField] private float bulletSpeed = 12f;
-
     [SerializeField] private float bulletLifeTime = 3f;
 
-    // ==========================
-    // FIRE
-    // ==========================
+    
 
     [Header("Fire")]
 
-    // Punto real desde donde saldrá la bala.
+    // Punto exacto desde donde sale la bala
     [SerializeField] private Transform firePoint;
 
     [SerializeField] private float fireCooldown = 0.2f;
 
-    // Se usa solo si FirePoint no está asignado.
+    // Respaldo si FirePoint no está asignado.
     [SerializeField] private float bulletSpawnDistance = 0.6f;
 
-    // ==========================
-    // AMMO
-    // ==========================
+    
 
     [Header("Ammo")]
     [SerializeField] private int magazineSize = 6;
-
     [SerializeField] private int reserveAmmo = 24;
-
     [SerializeField] private float reloadTime = 1.2f;
 
-    // ==========================
-    // COLLISION
-    // ==========================
+    
 
     [Header("Collision")]
     [SerializeField] private LayerMask bulletHitLayers;
 
-    // ==========================
-    // RUNTIME
-    // ==========================
+    
 
     private ObjectPool bulletPool;
 
@@ -69,25 +53,13 @@ public class Firearm : Weapon
 
     private bool isReloading;
 
-    // ==========================
-    // PUBLIC DATA
-    // ==========================
 
-    public int CurrentAmmo =>
-        currentAmmo;
+    public int CurrentAmmo => currentAmmo;
+    public int ReserveAmmo => reserveAmmo;
+    public int MagazineSize => magazineSize;
+    public bool IsReloading => isReloading;
 
-    public int ReserveAmmo =>
-        reserveAmmo;
-
-    public int MagazineSize =>
-        magazineSize;
-
-    public bool IsReloading =>
-        isReloading;
-
-    // ==========================
-    // UNITY
-    // ==========================
+    
 
     private void Awake()
     {
@@ -118,6 +90,32 @@ public class Firearm : Weapon
     }
 
     // ==========================
+    // AIM
+    // ==========================
+
+    public override void SetAimDirection(Vector2 direction)
+    {
+        if (direction.sqrMagnitude < 0.001f)
+            return;
+
+        if (aimPivot == null)
+            return;
+
+        float angle =
+            Mathf.Atan2(
+                direction.y,
+                direction.x
+            ) * Mathf.Rad2Deg;
+
+        aimPivot.rotation =
+            Quaternion.Euler(
+                0f,
+                0f,
+                angle
+            );
+    }
+
+    // ==========================
     // ATTACK
     // ==========================
 
@@ -132,7 +130,6 @@ public class Firearm : Weapon
         if (direction.sqrMagnitude < 0.001f)
             return;
 
-        // Sin balas en cargador.
         if (currentAmmo <= 0)
         {
             StartReload();
@@ -158,7 +155,6 @@ public class Firearm : Weapon
 
         currentAmmo--;
 
-        // Si existe FirePoint usamos su posición
         Vector2 spawnPosition =
             firePoint != null
                 ? (Vector2)firePoint.position
@@ -217,11 +213,9 @@ public class Firearm : Weapon
         if (isReloading)
             return;
 
-        // Cargador lleno.
         if (currentAmmo >= magazineSize)
             return;
 
-        // Sin munición de reserva.
         if (reserveAmmo <= 0)
             return;
 
