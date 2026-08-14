@@ -4,29 +4,23 @@ using UnityEngine.InputSystem;
 public class PlayerCombat : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField]
-    private PlayerMovement movement;
-
-    [SerializeField]
-    private Camera combatCamera;
+    [SerializeField] private PlayerMovement movement;
+    [SerializeField] private Camera combatCamera;
 
     [Header("Weapons")]
-    [SerializeField]
-    private Weapon[] weapons = new Weapon[3];
+    [SerializeField] private Weapon[] weapons = new Weapon[3];
 
     private int currentSlot = 0;
     private int previousSlot = -1;
 
     private Vector2 mouseScreenPosition;
+    private Vector2 aimDirection = Vector2.down;
 
-    private Vector2 aimDirection =
-        Vector2.down;
+    // Permite bloquear todos los inputs de combate.
+    private bool combatEnabled = true;
 
-    public Vector2 AimDirection =>
-        aimDirection;
-
-    public int CurrentSlot =>
-        currentSlot;
+    public Vector2 AimDirection => aimDirection;
+    public int CurrentSlot => currentSlot;
 
     public Weapon CurrentWeapon
     {
@@ -35,10 +29,7 @@ public class PlayerCombat : MonoBehaviour
             if (weapons == null)
                 return null;
 
-            if (
-                currentSlot < 0 ||
-                currentSlot >= weapons.Length
-            )
+            if (currentSlot < 0 || currentSlot >= weapons.Length)
                 return null;
 
             return weapons[currentSlot];
@@ -49,14 +40,12 @@ public class PlayerCombat : MonoBehaviour
     {
         if (movement == null)
         {
-            movement =
-                GetComponent<PlayerMovement>();
+            movement = GetComponent<PlayerMovement>();
         }
 
         if (combatCamera == null)
         {
-            combatCamera =
-                Camera.main;
+            combatCamera = Camera.main;
         }
     }
 
@@ -67,11 +56,16 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        // Calculamos constantemente hacia dónde apunta el mouse
+        // La dirección del mouse sigue actualizándose.
         UpdateAimDirection();
 
-        // Informamos constantemente al arma actual
+        // El arma actual sigue apuntando al mouse.
         UpdateWeaponAim();
+    }
+
+    public void SetCombatEnabled(bool enabled)
+    {
+        combatEnabled = enabled;
     }
 
     // ==========================
@@ -80,8 +74,7 @@ public class PlayerCombat : MonoBehaviour
 
     public void OnAim(InputValue value)
     {
-        mouseScreenPosition =
-            value.Get<Vector2>();
+        mouseScreenPosition = value.Get<Vector2>();
     }
 
     private void UpdateAimDirection()
@@ -113,8 +106,7 @@ public class PlayerCombat : MonoBehaviour
 
         if (direction.sqrMagnitude > 0.001f)
         {
-            aimDirection =
-                direction.normalized;
+            aimDirection = direction.normalized;
         }
     }
 
@@ -134,9 +126,14 @@ public class PlayerCombat : MonoBehaviour
 
     public void OnAttack(InputValue value)
     {
+        // Si el combate está bloqueado, no hacemos nada.
+        if (!combatEnabled)
+            return;
+
         if (!value.isPressed)
             return;
 
+        // No atacar mientras hace dash.
         if (
             movement != null &&
             movement.IsDashing
@@ -146,7 +143,6 @@ public class PlayerCombat : MonoBehaviour
         if (CurrentWeapon == null)
             return;
 
-        // AQUÍ es cuando realmente atacamos.
         CurrentWeapon.Attack(
             aimDirection
         );
@@ -158,6 +154,9 @@ public class PlayerCombat : MonoBehaviour
 
     public void OnReload(InputValue value)
     {
+        if (!combatEnabled)
+            return;
+
         if (!value.isPressed)
             return;
 
@@ -173,25 +172,36 @@ public class PlayerCombat : MonoBehaviour
 
     public void OnSlot1(InputValue value)
     {
+        if (!combatEnabled)
+            return;
+
         if (value.isPressed)
             SelectSlot(0);
     }
 
     public void OnSlot2(InputValue value)
     {
+        if (!combatEnabled)
+            return;
+
         if (value.isPressed)
             SelectSlot(1);
     }
 
     public void OnSlot3(InputValue value)
     {
+        if (!combatEnabled)
+            return;
+
         if (value.isPressed)
             SelectSlot(2);
     }
 
-    public void OnPreviousWeapon(
-        InputValue value)
+    public void OnPreviousWeapon(InputValue value)
     {
+        if (!combatEnabled)
+            return;
+
         if (!value.isPressed)
             return;
 
@@ -210,11 +220,7 @@ public class PlayerCombat : MonoBehaviour
         )
             return;
 
-        for (
-            int i = 0;
-            i < weapons.Length;
-            i++
-        )
+        for (int i = 0; i < weapons.Length; i++)
         {
             if (weapons[i] != null)
             {
@@ -225,7 +231,6 @@ public class PlayerCombat : MonoBehaviour
         if (weapons[0] != null)
         {
             currentSlot = 0;
-
             weapons[0].SetEquipped(true);
         }
     }
@@ -254,7 +259,6 @@ public class PlayerCombat : MonoBehaviour
 
         CurrentWeapon.SetEquipped(true);
 
-        // Informamos al arma actual de la dirección del mouse.
         CurrentWeapon.SetAimDirection(
             aimDirection
         );
@@ -265,9 +269,7 @@ public class PlayerCombat : MonoBehaviour
         if (previousSlot < 0)
             return;
 
-        if (
-            previousSlot >= weapons.Length
-        )
+        if (previousSlot >= weapons.Length)
             return;
 
         if (weapons[previousSlot] == null)
