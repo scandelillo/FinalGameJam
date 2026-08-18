@@ -145,7 +145,7 @@ Transform:
   m_GameObject: {fileID: 334231481}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.71, y: -0.02, z: 0}
+  m_LocalPosition: {x: 2.35, y: 0.39, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1681,7 +1681,7 @@ Transform:
   m_GameObject: {fileID: 1719036194}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.233, y: 0.025, z: 0}
+  m_LocalPosition: {x: -0.28, y: -0.24, z: 0}
   m_LocalScale: {x: 0.3, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1796,6 +1796,7 @@ MonoBehaviour:
   dashDuration: 0.3
   dashCooldown: 0.5
   animator: {fileID: 1860292554}
+  spriteRenderer: {fileID: 0}
 --- !u!50 &1860292546
 Rigidbody2D:
   serializedVersion: 5
