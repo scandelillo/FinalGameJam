@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Animation")]
     [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
     private Rigidbody2D rb;
 
@@ -33,7 +34,9 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         if (animator == null)
-            animator = GetComponent<Animator>();    
+            animator = GetComponent<Animator>();
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Update()
@@ -42,6 +45,12 @@ public class PlayerMovement : MonoBehaviour
         {
             UpdateFacingDirection();
         }
+
+        // No actualizamos Speed durante el dash: si el jugador mantiene
+        // WASD presionado, no queremos que "Walk" compita por interrumpir
+        // la animación de Dash antes de que termine.
+        if (animator != null && !isDashing)
+            animator.SetFloat("Speed", moveInput.magnitude);
     }
 
     private void FixedUpdate()
@@ -89,30 +98,31 @@ public class PlayerMovement : MonoBehaviour
 
 
     private void StartDash()
-{
-    isDashing = true;
-
-    dashTimeRemaining = dashDuration;
-    dashCooldownRemaining = dashCooldown;
-
-    if (moveInput.sqrMagnitude > 0.01f)
     {
-        dashDirection = moveInput.normalized;
-    }
-    else
-    {
-        dashDirection = facingDirection.normalized;
-    }
+        isDashing = true;
 
-    // Congela visualmente la dirección del personaje
-    // en la dirección en la que comenzó el dash.
-    facingDirection = Get8Direction(dashDirection);
+        dashTimeRemaining = dashDuration;
+        dashCooldownRemaining = dashCooldown;
 
-    if (animator != null)
-    {
-        animator.SetBool("IsDashing", true);
+        if (moveInput.sqrMagnitude > 0.01f)
+        {
+            dashDirection = moveInput.normalized;
+        }
+        else
+        {
+            dashDirection = facingDirection.normalized;
+        }
+
+        // Congela visualmente la dirección del personaje
+        // en la dirección en la que comenzó el dash.
+        facingDirection = Get8Direction(dashDirection);
+        UpdateSpriteFlip();
+
+        if (animator != null)
+        {
+            animator.SetBool("IsDashing", true);
+        }
     }
-}
 
     private void DashMovement()
     {
@@ -149,6 +159,21 @@ public class PlayerMovement : MonoBehaviour
             return;
 
         facingDirection = Get8Direction(moveInput);
+        UpdateSpriteFlip();
+    }
+
+    private void UpdateSpriteFlip()
+    {
+        if (spriteRenderer == null) return;
+
+        // Los sprites miran a la derecha por defecto.
+        // Si facingDirection.x es negativo, volteamos.
+        // Cuando x == 0 (mirando arriba/abajo puro), dejamos
+        // el flip como estaba, para no "parpadear" a la derecha.
+        if (facingDirection.x > 0.01f)
+            spriteRenderer.flipX = false;
+        else if (facingDirection.x < -0.01f)
+            spriteRenderer.flipX = true;
     }
 
     private Vector2 Get8Direction(Vector2 direction)
