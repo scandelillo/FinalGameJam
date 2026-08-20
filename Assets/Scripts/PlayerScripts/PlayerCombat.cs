@@ -62,8 +62,14 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        // La dirección del mouse sigue actualizándose.
+        // Actualizamos la dirección hacia el mouse.
         UpdateAimDirection();
+
+        // Volteamos visualmente el jugador hacia el mouse.
+        if (movement != null)
+        {
+            movement.SetAimFacing(aimDirection);
+        }
 
         // El arma actual sigue apuntando al mouse.
         UpdateWeaponAim();
