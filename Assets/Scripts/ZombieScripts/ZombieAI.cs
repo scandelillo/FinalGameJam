@@ -1,40 +1,54 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
-/// Persigue al jugador y lo ataca al estar en rango. Usa Speed/Damage que
-/// ZombieController ya calculó según la ronda actual (Initialize los setea).
-/// Va en el mismo prefab que ZombieController.
+/// Persigue al jugador usando NavMesh (esquiva paredes/obstáculos entre salas)
+/// y lo ataca al estar en rango. Usa Speed/Damage que ZombieController ya
+/// calculó según la ronda actual. Requiere NavMeshPlus instalado y un
+/// NavMesh horneado en la escena.
 /// </summary>
-[RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(ZombieController))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class ZombieAI : MonoBehaviour
 {
     [Header("Ataque")]
     [SerializeField] private float attackRange = 0.6f;
     [SerializeField] private float attackCooldown = 1f;
 
+    [Header("Pathfinding")]
+    [Tooltip("Cada cuánto recalcula el camino hacia el jugador, en segundos. Recalcularlo cada frame es innecesariamente caro.")]
+    [SerializeField] private float repathInterval = 0.3f;
+
     [Header("Animation")]
     [SerializeField] private Animator animator;
 
-    private Rigidbody2D rb;
+    private NavMeshAgent agent;
     private ZombieController zombieController;
     private Transform player;
     private float attackCooldownRemaining;
+    private float repathTimer;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        agent = GetComponent<NavMeshAgent>();
         zombieController = GetComponent<ZombieController>();
 
         if (animator == null)
             animator = GetComponent<Animator>();
+
+        // Claves para 2D: el agente no debe rotar en 3D ni intentar
+        // alinearse con un eje "up" que no existe en un juego top-down 2D.
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
     }
 
     private void OnEnable()
     {
         // El objeto se reactiva desde el pool cada vez que spawnea,
-        // así que reseteamos su estado de ataque acá.
+        // así que reseteamos su estado acá.
         attackCooldownRemaining = 0f;
+        repathTimer = 0f;
+        agent.isStopped = false;
 
         if (player == null)
         {
@@ -43,12 +57,14 @@ public class ZombieAI : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (player == null) return;
 
+        agent.speed = zombieController.Speed;
+
         if (attackCooldownRemaining > 0f)
-            attackCooldownRemaining -= Time.fixedDeltaTime;
+            attackCooldownRemaining -= Time.deltaTime;
 
         float distance = Vector2.Distance(transform.position, player.position);
 
@@ -58,22 +74,37 @@ public class ZombieAI : MonoBehaviour
         }
         else
         {
-            rb.linearVelocity = Vector2.zero;
-
-            if (animator != null)
-                animator.SetFloat("Speed", 0f);
-
-            TryAttack();
+            StopToAttack();
         }
     }
 
     private void ChasePlayer()
     {
-        Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
-        rb.linearVelocity = direction * zombieController.Speed;
+        agent.isStopped = false;
+
+        // No recalculamos el path cada frame: es una operación cara
+        // multiplicada por decenas de zombies. Con repathInterval alcanza
+        // para que se sienta responsivo sin matar el framerate.
+        repathTimer -= Time.deltaTime;
+        if (repathTimer <= 0f)
+        {
+            repathTimer = repathInterval;
+            agent.SetDestination(player.position);
+        }
 
         if (animator != null)
-            animator.SetFloat("Speed", zombieController.Speed);
+            animator.SetFloat("Speed", agent.velocity.magnitude);
+    }
+
+    private void StopToAttack()
+    {
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+
+        if (animator != null)
+            animator.SetFloat("Speed", 0f);
+
+        TryAttack();
     }
 
     private void TryAttack()

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7188360595594364360}
   - component: {fileID: -2838745244880300981}
   - component: {fileID: 1722038701268316887}
+  - component: {fileID: 1746344401113794967}
   m_Layer: 7
   m_Name: Capsule
   m_TagString: Untagged
@@ -149,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZombieAI
   attackRange: 0.6
   attackCooldown: 1
+  repathInterval: 0.3
   animator: {fileID: 0}
 --- !u!70 &-2838745244880300981
 CapsuleCollider2D:
@@ -209,3 +211,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!195 &1746344401113794967
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3366499226998370555}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.2
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
