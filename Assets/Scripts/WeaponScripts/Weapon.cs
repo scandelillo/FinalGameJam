@@ -8,6 +8,10 @@ public abstract class Weapon : MonoBehaviour
 
     public bool IsEquipped { get; private set; }
 
+    // Le dice a PlayerCombat qué set de animación de caminar usar.
+    // false = "sin arma" (default). MeleeWeapon la sobreescribe en true.
+    public virtual bool UsesMeleeWalkAnimation => false;
+
     public virtual void SetEquipped(bool equipped)
     {
         IsEquipped = equipped;

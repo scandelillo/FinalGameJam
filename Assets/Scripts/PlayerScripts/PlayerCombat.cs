@@ -6,6 +6,7 @@ public class PlayerCombat : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerMovement movement;
     [SerializeField] private Camera combatCamera;
+    [SerializeField] private Animator animator;
 
     [Header("Weapons")]
     [SerializeField] private Weapon[] weapons = new Weapon[3];
@@ -46,6 +47,11 @@ public class PlayerCombat : MonoBehaviour
         if (combatCamera == null)
         {
             combatCamera = Camera.main;
+        }
+
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
         }
     }
 
@@ -209,6 +215,18 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // ==========================
+    // ANIMATION
+    // ==========================
+
+    private void UpdateWeaponAnimation()
+    {
+        if (animator == null) return;
+
+        bool hasMelee = CurrentWeapon != null && CurrentWeapon.UsesMeleeWalkAnimation;
+        animator.SetBool("HasMeleeWeapon", hasMelee);
+    }
+
+    // ==========================
     // WEAPONS
     // ==========================
 
@@ -233,6 +251,8 @@ public class PlayerCombat : MonoBehaviour
             currentSlot = 0;
             weapons[0].SetEquipped(true);
         }
+
+        UpdateWeaponAnimation();
     }
 
     private void SelectSlot(int newSlot)
@@ -262,6 +282,8 @@ public class PlayerCombat : MonoBehaviour
         CurrentWeapon.SetAimDirection(
             aimDirection
         );
+
+        UpdateWeaponAnimation();
     }
 
     private void SwitchToPreviousWeapon()
@@ -287,5 +309,7 @@ public class PlayerCombat : MonoBehaviour
         CurrentWeapon.SetAimDirection(
             aimDirection
         );
+
+        UpdateWeaponAnimation();
     }
 }

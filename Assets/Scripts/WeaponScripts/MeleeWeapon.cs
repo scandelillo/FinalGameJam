@@ -25,6 +25,12 @@ public class MeleeWeapon : Weapon
     [SerializeField]
     private Transform attackOrigin;
 
+    [Header("Animation")]
+    [SerializeField]
+    private Animator animator;
+
+    public override bool UsesMeleeWalkAnimation => true;
+
     private float cooldownRemaining;
 
     // Ahora esta dirección se actualiza todo el tiempo
@@ -34,6 +40,12 @@ public class MeleeWeapon : Weapon
     private readonly HashSet<IDamageable>
         hitTargets =
             new HashSet<IDamageable>();
+
+    private void Awake()
+    {
+        if (animator == null)
+            animator = GetComponentInParent<Animator>();
+    }
 
     private void Update()
     {
@@ -75,6 +87,9 @@ public class MeleeWeapon : Weapon
 
         cooldownRemaining =
             attackCooldown;
+
+        if (animator != null)
+            animator.SetTrigger("MeleeAttack");
 
         PerformMeleeAttack(direction);
     }
@@ -119,7 +134,7 @@ public class MeleeWeapon : Weapon
                     directionToTarget.normalized
                 );
 
-            
+
             if (
                 angle >
                 attackAngle / 2f
