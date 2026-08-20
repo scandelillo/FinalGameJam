@@ -16,8 +16,8 @@ MonoBehaviour:
   prefab: {fileID: 3366499226998370555, guid: 05ae06da417d1ce49b29bba18eb27a52, type: 3}
   baseHealth: 30
   baseDamage: 5
-  baseSpeed: 3
-  pointsValue: 10
+  baseSpeed: 2
+  pointsValue: 20
   healthGrowthPerWave: 0.15
   damageGrowthPerWave: 0.1
   speedGrowthPerWave: 0.02
