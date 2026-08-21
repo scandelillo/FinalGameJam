@@ -6,7 +6,7 @@
 public enum ZoneId
 {
     HabitacionInicial,
-    ZonaB,
-    ZonaC
-    // agreguen aquí cada nueva zona que diseñen
+    SalaSeguridad,
+    Oficinas,
+    ZonaTienda
 }

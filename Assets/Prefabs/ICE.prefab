@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 1722038701268316887}
   - component: {fileID: 1746344401113794967}
   m_Layer: 7
-  m_Name: Capsule
+  m_Name: ICE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
