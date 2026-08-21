@@ -3066,6 +3066,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   attackOrigin: {fileID: 334231482}
+  animator: {fileID: 1860292554}
 --- !u!1 &1788949159
 GameObject:
   m_ObjectHideFlags: 0
@@ -3300,6 +3301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
   movement: {fileID: 1860292545}
   combatCamera: {fileID: 519420031}
+  animator: {fileID: 1860292554}
   weapons:
   - {fileID: 1719036196}
   - {fileID: 1325884904}

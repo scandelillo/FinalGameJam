@@ -6,7 +6,7 @@ using UnityEngine;
 /// recibe sus stats vía Initialize() y avisa con un evento cuando muere,
 /// para que el pool lo recicle y el spawner descuente el contador de oleada.
 /// </summary>
-public class ZombieController : MonoBehaviour
+public class ZombieController : MonoBehaviour, IDamageable
 {
     public event Action<ZombieController> OnZombieDied;
 
