@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 1722038701268316887}
   - component: {fileID: 1746344401113794967}
   m_Layer: 7
-  m_Name: Capsule
+  m_Name: ICE TANK
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -87,7 +87,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3730334428395806793, guid: bcf11c6971df52a4c8ea27d2550e5a28, type: 3}
+  m_Sprite: {fileID: 1738783606977176805, guid: 6aa6027b14e342f40a2f778cc9720099, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -136,6 +136,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab34ddb1d22c174eb8c1c8cf069b0a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZombieController
+  spriteRenderer: {fileID: 34264478311340288}
+  damageFlashDuration: 0.18
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &7188360595594364360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,10 +151,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff2129be31c3f6a48aaa92cfcdc13e20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZombieAI
-  attackRange: 0.6
+  attackRange: 1
   attackCooldown: 1
   repathInterval: 0.3
   animator: {fileID: 0}
+  spriteRenderer: {fileID: 0}
 --- !u!70 &-2838745244880300981
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -199,7 +203,7 @@ Animator:
   m_GameObject: {fileID: 3366499226998370555}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 78014356458756747a7a519bd44dc853, type: 2}
+  m_Controller: {fileID: 9100000, guid: e18bf03f7e9dbf14e92dce55b8039a53, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tanque
   m_EditorClassIdentifier: Assembly-CSharp::ZombieTypeSO
   zombieName: Tanque ICE
-  prefab: {fileID: 3366499226998370555, guid: 05ae06da417d1ce49b29bba18eb27a52, type: 3}
+  prefab: {fileID: 3366499226998370555, guid: d06469bd623811e40b2a42da2e889931, type: 3}
   baseHealth: 50
   baseDamage: 5
   baseSpeed: 1

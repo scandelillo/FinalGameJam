@@ -33,13 +33,17 @@ public class MeleeWeapon : Weapon
 
     private float cooldownRemaining;
 
-    // Ahora esta dirección se actualiza todo el tiempo
-    private Vector2 currentAimDirection =
-        Vector2.right;
+    // Dirección que se utilizará cuando llegue el momento
+    // del impacto en la animación.
+    private Vector2 attackDirection = Vector2.right;
 
-    private readonly HashSet<IDamageable>
-        hitTargets =
-            new HashSet<IDamageable>();
+    // Dirección utilizada para mostrar los Gizmos.
+    private Vector2 currentAimDirection = Vector2.right;
+
+    // Evita que un mismo zombie reciba daño dos veces
+    // si tiene varios colliders.
+    private readonly HashSet<IDamageable> hitTargets =
+        new HashSet<IDamageable>();
 
     private void Awake()
     {
@@ -51,8 +55,7 @@ public class MeleeWeapon : Weapon
     {
         if (cooldownRemaining > 0f)
         {
-            cooldownRemaining -=
-                Time.deltaTime;
+            cooldownRemaining -= Time.deltaTime;
         }
     }
 
@@ -60,22 +63,19 @@ public class MeleeWeapon : Weapon
     // AIM
     // ==========================
 
-    public override void SetAimDirection(
-        Vector2 direction)
+    public override void SetAimDirection(Vector2 direction)
     {
         if (direction.sqrMagnitude < 0.001f)
             return;
 
-        currentAimDirection =
-            direction.normalized;
+        currentAimDirection = direction.normalized;
     }
 
     // ==========================
     // ATTACK
     // ==========================
 
-    public override void Attack(
-        Vector2 direction)
+    public override void Attack(Vector2 direction)
     {
         if (cooldownRemaining > 0f)
             return;
@@ -83,19 +83,37 @@ public class MeleeWeapon : Weapon
         if (direction.sqrMagnitude < 0.001f)
             return;
 
-        direction.Normalize();
+        // Guardamos la dirección del ataque.
+        // El daño se aplicará después mediante
+        // el Animation Event.
+        attackDirection = direction.normalized;
 
-        cooldownRemaining =
-            attackCooldown;
+        currentAimDirection = attackDirection;
 
+        cooldownRemaining = attackCooldown;
+
+        // Solo iniciamos la animación.
+        // El daño NO se aplica aquí.
         if (animator != null)
             animator.SetTrigger("MeleeAttack");
-
-        PerformMeleeAttack(direction);
     }
 
-    private void PerformMeleeAttack(
-        Vector2 direction)
+    // ==========================
+    // ANIMATION EVENT
+    // ==========================
+
+    // Este método será llamado por el Animation Event
+    // exactamente en el frame donde ocurre el impacto.
+    public void PerformMeleeAttack()
+    {
+        PerformMeleeAttack(attackDirection);
+    }
+
+    // ==========================
+    // MELEE DAMAGE
+    // ==========================
+
+    private void PerformMeleeAttack(Vector2 direction)
     {
         Vector2 origin =
             attackOrigin != null
@@ -109,12 +127,11 @@ public class MeleeWeapon : Weapon
                 zombieLayers
             );
 
+        // Limpiamos los objetivos golpeados
+        // para este nuevo ataque.
         hitTargets.Clear();
 
-        foreach (
-            Collider2D targetCollider
-            in colliders
-        )
+        foreach (Collider2D targetCollider in colliders)
         {
             Vector2 targetPosition =
                 targetCollider.bounds.center;
@@ -122,50 +139,39 @@ public class MeleeWeapon : Weapon
             Vector2 directionToTarget =
                 targetPosition - origin;
 
-            if (
-                directionToTarget.sqrMagnitude
-                <= 0.001f
-            )
+            if (directionToTarget.sqrMagnitude <= 0.001f)
                 continue;
 
+            // Calculamos el ángulo entre la dirección
+            // del ataque y el objetivo.
             float angle =
                 Vector2.Angle(
                     direction,
                     directionToTarget.normalized
                 );
 
-
-            if (
-                angle >
-                attackAngle / 2f
-            )
+            // Si está fuera del abanico del ataque,
+            // no recibe daño.
+            if (angle > attackAngle / 2f)
                 continue;
 
-            // Buscamos cualquier IDamageable.
+            // Buscamos el IDamageable en el objeto
+            // o en alguno de sus padres.
             IDamageable damageable =
-                targetCollider
-                    .GetComponentInParent
-                    <IDamageable>();
+                targetCollider.GetComponentInParent<IDamageable>();
 
             if (damageable == null)
                 continue;
 
-            // Evitamos daño doble si el mismo
-            // objetivo tiene varios colliders.
-            if (
-                hitTargets.Contains(
-                    damageable
-                )
-            )
+            // Evitamos daño doble si el zombie
+            // tiene varios colliders.
+            if (hitTargets.Contains(damageable))
                 continue;
 
-            hitTargets.Add(
-                damageable
-            );
+            hitTargets.Add(damageable);
 
-            damageable.TakeDamage(
-                damage
-            );
+            // AQUÍ ocurre finalmente el daño.
+            damageable.TakeDamage(damage);
         }
     }
 
@@ -185,8 +191,6 @@ public class MeleeWeapon : Weapon
             range
         );
 
-        // usamos currentAimDirection,
-        // que se actualiza todos los frames.
         Vector2 left =
             RotateVector(
                 currentAimDirection,
@@ -201,14 +205,12 @@ public class MeleeWeapon : Weapon
 
         Gizmos.DrawLine(
             origin,
-            origin +
-            (Vector3)(left * range)
+            origin + (Vector3)(left * range)
         );
 
         Gizmos.DrawLine(
             origin,
-            origin +
-            (Vector3)(right * range)
+            origin + (Vector3)(right * range)
         );
     }
 
@@ -226,11 +228,8 @@ public class MeleeWeapon : Weapon
             Mathf.Sin(radians);
 
         return new Vector2(
-            vector.x * cos
-                - vector.y * sin,
-
-            vector.x * sin
-                + vector.y * cos
+            vector.x * cos - vector.y * sin,
+            vector.x * sin + vector.y * cos
         );
     }
 }

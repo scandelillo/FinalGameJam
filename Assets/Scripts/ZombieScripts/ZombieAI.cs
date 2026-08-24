@@ -21,6 +21,8 @@ public class ZombieAI : MonoBehaviour
 
     [Header("Animation")]
     [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+
 
     private NavMeshAgent agent;
     private ZombieController zombieController;
@@ -35,6 +37,9 @@ public class ZombieAI : MonoBehaviour
 
         if (animator == null)
             animator = GetComponent<Animator>();
+
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
 
         // Claves para 2D: el agente no debe rotar en 3D ni intentar
         // alinearse con un eje "up" que no existe en un juego top-down 2D.
@@ -76,6 +81,8 @@ public class ZombieAI : MonoBehaviour
         {
             StopToAttack();
         }
+
+        UpdateSpriteDirection();
     }
 
     private void ChasePlayer()
@@ -118,5 +125,20 @@ public class ZombieAI : MonoBehaviour
 
         if (player.TryGetComponent(out IDamageable damageable))
             damageable.TakeDamage(zombieController.Damage);
+    }
+
+    private void UpdateSpriteDirection()
+    {
+        if (spriteRenderer == null)
+            return;
+
+        if (agent.velocity.x > 0.01f)
+        {
+            spriteRenderer.flipX = false;
+        }
+        else if (agent.velocity.x < -0.01f)
+        {
+            spriteRenderer.flipX = true;
+        }
     }
 }

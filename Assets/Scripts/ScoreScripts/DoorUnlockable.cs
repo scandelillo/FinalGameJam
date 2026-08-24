@@ -11,6 +11,7 @@ using UnityEngine;
 public class DoorUnlockable : MonoBehaviour
 {
     [Header("Configuración")]
+    [Tooltip("Deja Wave Spawner vacío si esta puerta no debe activar ninguna zona de spawn (ej. solo abre un pasillo)")]
     [SerializeField] private ZoneId zoneToUnlock;
     [SerializeField] private int pointsCost = 500;
     [SerializeField] private WaveSpawner waveSpawner;
@@ -18,6 +19,12 @@ public class DoorUnlockable : MonoBehaviour
     [Header("Referencias físicas")]
     [Tooltip("Collider2D (no trigger) que bloquea el paso; se desactiva al abrir")]
     [SerializeField] private Collider2D physicalBlocker;
+
+    [Header("Visual")]
+    [Tooltip("El sprite de la puerta cerrada, se oculta al abrir (déjalo vacío si esta puerta usa Open Move Offset en vez de ocultarse)")]
+    [SerializeField] private SpriteRenderer doorSprite;
+    [Tooltip("Si es distinto de (0,0), la puerta se desplaza este offset al abrirse en vez de (o además de) ocultar el sprite. Ej: (-1.5, 0) la mueve a la izquierda")]
+    [SerializeField] private Vector2 openMoveOffset = Vector2.zero;
 
     [Header("Feedback (opcional)")]
     [SerializeField] private Animator doorAnimator;
@@ -54,8 +61,14 @@ public class DoorUnlockable : MonoBehaviour
 
         isOpen = true;
         physicalBlocker.enabled = false;
-        waveSpawner.UnlockZone(zoneToUnlock);
 
+        // Opcional: algunas puertas (ej. solo un pasillo) no controlan
+        // ninguna zona de spawn, así que no tienen WaveSpawner asignado.
+        if (waveSpawner != null)
+            waveSpawner.UnlockZone(zoneToUnlock);
+
+        if (doorSprite != null) doorSprite.enabled = false;
+        if (openMoveOffset != Vector2.zero) transform.position += (Vector3)openMoveOffset;
         if (doorAnimator != null) doorAnimator.SetTrigger("Open");
         if (promptUI != null) promptUI.SetActive(false);
     }
