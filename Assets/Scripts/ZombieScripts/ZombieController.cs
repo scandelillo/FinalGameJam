@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// Va en el prefab de cada zombie. No sabe nada de pooling directamente:
@@ -17,6 +18,23 @@ public class ZombieController : MonoBehaviour, IDamageable
     private ZombieTypeSO typeData;
     private ZombiePoolManager poolManager;
 
+    [Header("Damage Feedback")]
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private float damageFlashDuration = 0.1f;
+    [SerializeField] private Color damageColor = Color.red;
+
+    private Color originalColor;
+    private Coroutine damageFlashCoroutine;
+
+    private void Awake()
+    {
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        originalColor = spriteRenderer.color;
+    }
+
+
     public void Initialize(ZombieTypeSO data, int wave, ZombiePoolManager manager)
     {
         typeData = data;
@@ -32,9 +50,35 @@ public class ZombieController : MonoBehaviour, IDamageable
         Debug.Log($"[DEBUG] {name} recibió {amount} de daño. Vida restante: {CurrentHealth - amount}");
 
         CurrentHealth -= amount;
+        
+        FlashDamage();
+
         if (CurrentHealth <= 0f)
             Die();
     }
+
+
+    private void FlashDamage()
+    {
+        if (damageFlashCoroutine != null)
+            StopCoroutine(damageFlashCoroutine);
+
+        damageFlashCoroutine = StartCoroutine(DamageFlashCoroutine());
+    }
+
+
+    private IEnumerator DamageFlashCoroutine()
+    {
+        spriteRenderer.color = damageColor;
+
+        yield return new WaitForSeconds(damageFlashDuration);
+
+        spriteRenderer.color = originalColor;
+
+        damageFlashCoroutine = null;
+    }
+
+
 
     private void Die()
     {
@@ -63,5 +107,17 @@ public class ZombieController : MonoBehaviour, IDamageable
 
         if (pickupObj.TryGetComponent(out AmmoPickup pickup))
             pickup.SetAmount(amount);
+    }
+
+    private void OnDisable()
+    {
+        if (damageFlashCoroutine != null)
+        {
+            StopCoroutine(damageFlashCoroutine);
+            damageFlashCoroutine = null;
+        }
+
+        if (spriteRenderer != null)
+            spriteRenderer.color = originalColor;
     }
 }
