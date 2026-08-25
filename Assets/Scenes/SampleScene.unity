@@ -10179,6 +10179,8 @@ MonoBehaviour:
   target: {fileID: 1860292548}
   smoothTime: 0.15
   offset: {x: 0, y: 0, z: -10}
+  shakeDuration: 0.12
+  shakeIntensity: 0.08
 --- !u!1 &525987476
 GameObject:
   m_ObjectHideFlags: 0
@@ -20522,9 +20524,11 @@ MonoBehaviour:
   firePoint: {fileID: 1325884903}
   fireCooldown: 0.2
   bulletSpawnDistance: 0.6
+  automaticFireUnlocked: 0
   magazineSize: 6
   reserveAmmo: 24
   reloadTime: 1.2
+  maxMagazineSize: 30
   bulletHitLayers:
     serializedVersion: 2
     m_Bits: 128
@@ -28536,7 +28540,7 @@ Transform:
   m_GameObject: {fileID: 1860292544}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.6, y: 1.79, z: 0}
+  m_LocalPosition: {x: -10.19, y: 2.17, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -28653,6 +28657,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
+  absoluteMaxHealth: 200
+  spriteRenderer: {fileID: 0}
+  damageFlashDuration: 0.1
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!95 &1860292554
 Animator:
   serializedVersion: 7
@@ -40270,6 +40278,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3558030707409759204, guid: 3b4498c43cdbb664a803a8038a5c5195, type: 3}
+      propertyPath: m_Size.x
+      value: 0.67
+      objectReference: {fileID: 0}
+    - target: {fileID: -3558030707409759204, guid: 3b4498c43cdbb664a803a8038a5c5195, type: 3}
+      propertyPath: m_Size.y
+      value: 0.82
+      objectReference: {fileID: 0}
+    - target: {fileID: -3558030707409759204, guid: 3b4498c43cdbb664a803a8038a5c5195, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.03
+      objectReference: {fileID: 0}
     - target: {fileID: 7265642194213479997, guid: 3b4498c43cdbb664a803a8038a5c5195, type: 3}
       propertyPath: m_Name
       value: AmmoPrefab
