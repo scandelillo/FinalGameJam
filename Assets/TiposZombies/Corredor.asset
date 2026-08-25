@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be6f25a0aedb1544881bde0b62ecaf77, type: 3}
+  m_Name: Corredor
+  m_EditorClassIdentifier: Assembly-CSharp::ZombieTypeSO
+  zombieName: Corredor ICE
+  prefab: {fileID: 3366499226998370555, guid: 05ae06da417d1ce49b29bba18eb27a52, type: 3}
+  baseHealth: 15
+  baseDamage: 5
+  baseSpeed: 3
+  pointsValue: 20
+  healthGrowthPerWave: 0.5
+  damageGrowthPerWave: 0.3
+  speedGrowthPerWave: 0.02
+  speedCap: 5
+  ammoDropChance: 0.15
+  ammoPickupPrefab: {fileID: 7265642194213479997, guid: 3b4498c43cdbb664a803a8038a5c5195, type: 3}
+  minAmmoDrop: 6
+  maxAmmoDrop: 12

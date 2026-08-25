@@ -23,8 +23,7 @@ public class WaveSpawner : MonoBehaviour
     [System.Serializable]
     public class ZoneSpawnGroup
     {
-        [Tooltip("Identificador único de la zona, ej. 'HabitacionInicial', 'ZonaB'")]
-        public string zoneId;
+        public ZoneId zoneId;
         public Transform[] spawnPoints;
         [Tooltip("La habitación inicial debe empezar desbloqueada")]
         public bool startsUnlocked = false;
@@ -59,12 +58,12 @@ public class WaveSpawner : MonoBehaviour
     /// <summary>
     /// Llamado por el sistema de puertas/puntos cuando el jugador desbloquea una zona.
     /// </summary>
-    public void UnlockZone(string zoneId)
+    public void UnlockZone(ZoneId zoneId)
     {
         ZoneSpawnGroup zone = zones.Find(z => z.zoneId == zoneId);
         if (zone == null)
         {
-            Debug.LogWarning($"WaveSpawner: no existe una zona con id '{zoneId}'");
+            Debug.LogWarning($"WaveSpawner: no hay ninguna ZoneSpawnGroup configurada con ZoneId.{zoneId}");
             return;
         }
         zone.isUnlocked = true;

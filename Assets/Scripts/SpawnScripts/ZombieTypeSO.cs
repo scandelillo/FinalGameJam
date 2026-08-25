@@ -15,6 +15,8 @@ public class ZombieTypeSO : ScriptableObject
     public float baseHealth = 30f;
     public float baseDamage = 5f;
     public float baseSpeed = 2f;
+    [Tooltip("Puntos que otorga al jugador al morir")]
+    public int pointsValue = 10;
 
     [Header("Escalado por oleada")]
     [Tooltip("Fracción de crecimiento por oleada, ej. 0.15 = +15% por oleada")]
@@ -23,6 +25,14 @@ public class ZombieTypeSO : ScriptableObject
     public float speedGrowthPerWave = 0.02f;
     [Tooltip("Límite superior de velocidad para que no se vuelva injugable en oleadas altas")]
     public float speedCap = 4f;
+
+    [Header("Drop de munición")]
+    [Range(0f, 1f)]
+    [Tooltip("Probabilidad de soltar munición al morir, 0 = nunca, 1 = siempre")]
+    public float ammoDropChance = 0.15f;
+    public GameObject ammoPickupPrefab;
+    public int minAmmoDrop = 6;
+    public int maxAmmoDrop = 12;
 
     public float GetHealthForWave(int wave) =>
         baseHealth * (1f + healthGrowthPerWave * (wave - 1));
