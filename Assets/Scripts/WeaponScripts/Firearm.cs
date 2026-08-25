@@ -3,35 +3,29 @@ using UnityEngine;
 
 public class Firearm : Weapon, IAmmoContainer
 {
-    
-
+   
     [Header("Aim")]
     [SerializeField] private Transform aimPivot;
 
-   
     private SpriteRenderer weaponSpriteRenderer;
 
-
-    
+   
 
     [Header("Bullet")]
     [SerializeField] private Bullet bulletPrefab;
     [SerializeField] private Transform bulletPoolParent;
     [SerializeField] private int initialBulletPoolSize = 20;
 
-
-    
+   
 
     [Header("Bullet Stats")]
     [SerializeField] private float bulletDamage = 20f;
     [SerializeField] private float bulletSpeed = 12f;
     [SerializeField] private float bulletLifeTime = 3f;
 
-
-   
+  
 
     [Header("Fire")]
-
     [SerializeField] private Transform firePoint;
 
     [SerializeField] private float fireCooldown = 0.2f;
@@ -39,21 +33,32 @@ public class Firearm : Weapon, IAmmoContainer
     // Respaldo si FirePoint no está asignado.
     [SerializeField] private float bulletSpawnDistance = 0.6f;
 
-
     
+
+    [Header("Fire Mode")]
+
+    // Empieza desactivado:
+    // una pulsación = un disparo.
+    [SerializeField] private bool automaticFireUnlocked = false;
+
+   
 
     [Header("Ammo")]
     [SerializeField] private int magazineSize = 6;
     [SerializeField] private int reserveAmmo = 24;
     [SerializeField] private float reloadTime = 1.2f;
 
+   
 
-  
+    [Header("Magazine Upgrade")]
+    [SerializeField] private int maxMagazineSize = 30;
+
+    
 
     [Header("Collision")]
     [SerializeField] private LayerMask bulletHitLayers;
 
-
+   
 
     private ObjectPool bulletPool;
 
@@ -63,12 +68,27 @@ public class Firearm : Weapon, IAmmoContainer
 
     private bool isReloading;
 
+   
 
     public int CurrentAmmo => currentAmmo;
+
     public int ReserveAmmo => reserveAmmo;
+
     public int MagazineSize => magazineSize;
+
+    public int MaxMagazineSize => maxMagazineSize;
+
     public bool IsReloading => isReloading;
 
+    public bool IsAutomaticFireEnabled =>
+        automaticFireUnlocked;
+
+    public bool IsMagazineMaxed =>
+        magazineSize >= maxMagazineSize;
+
+    // ==========================
+    // UNITY
+    // ==========================
 
     private void Awake()
     {
@@ -104,7 +124,6 @@ public class Firearm : Weapon, IAmmoContainer
         }
     }
 
-
     // ==========================
     // AIM
     // ==========================
@@ -117,14 +136,12 @@ public class Firearm : Weapon, IAmmoContainer
         if (aimPivot == null)
             return;
 
-        
         float angle =
             Mathf.Atan2(
                 direction.y,
                 direction.x
             ) * Mathf.Rad2Deg;
 
-        
         aimPivot.rotation =
             Quaternion.Euler(
                 0f,
@@ -132,17 +149,14 @@ public class Firearm : Weapon, IAmmoContainer
                 angle
             );
 
-        // ==============================
-        // CORRECCIÓN VISUAL DEL ARMA
-        // ==============================
-
+        // Evita que el arma quede boca abajo
+        // cuando apunta hacia la izquierda.
         if (weaponSpriteRenderer != null)
         {
             weaponSpriteRenderer.flipY =
                 direction.x < 0f;
         }
     }
-
 
     // ==========================
     // ATTACK
@@ -172,7 +186,6 @@ public class Firearm : Weapon, IAmmoContainer
 
         Fire(direction);
     }
-
 
     // ==========================
     // FIRE
@@ -229,6 +242,67 @@ public class Firearm : Weapon, IAmmoContainer
         );
     }
 
+    // ==========================
+    // AUTOMATIC FIRE UPGRADE
+    // ==========================
+
+    public bool UnlockAutomaticFire()
+    {
+        if (automaticFireUnlocked)
+        {
+            return false;
+        }
+
+        automaticFireUnlocked = true;
+
+        Debug.Log(
+            $"{name}: AUTOMATIC FIRE desbloqueado."
+        );
+
+        return true;
+    }
+
+    // ==========================
+    // MAGAZINE UPGRADE
+    // ==========================
+
+    public bool IncreaseMagazineSize(int amount)
+    {
+        if (amount <= 0)
+            return false;
+
+        if (magazineSize >= maxMagazineSize)
+            return false;
+
+        int previousMagazineSize =
+            magazineSize;
+
+        magazineSize += amount;
+
+        magazineSize = Mathf.Clamp(
+            magazineSize,
+            1,
+            maxMagazineSize
+        );
+
+        int realIncrease =
+            magazineSize - previousMagazineSize;
+
+        currentAmmo += realIncrease;
+
+        currentAmmo = Mathf.Clamp(
+            currentAmmo,
+            0,
+            magazineSize
+        );
+
+        Debug.Log(
+            $"Cargador aumentado: " +
+            $"{previousMagazineSize} → {magazineSize}"
+        );
+
+        return true;
+    }
 
     // ==========================
     // RELOAD
@@ -274,9 +348,11 @@ public class Firearm : Weapon, IAmmoContainer
                 reserveAmmo
             );
 
-        currentAmmo += amountToReload;
+        currentAmmo +=
+            amountToReload;
 
-        reserveAmmo -= amountToReload;
+        reserveAmmo -=
+            amountToReload;
 
         isReloading = false;
 
@@ -286,9 +362,8 @@ public class Firearm : Weapon, IAmmoContainer
         );
     }
 
-
     // ==========================
-    // AMMO PICKUP
+    // AMMO PICKUP / SHOP
     // ==========================
 
     public void AddReserveAmmo(int amount)
