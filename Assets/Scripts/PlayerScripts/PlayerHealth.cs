@@ -6,12 +6,19 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
 
+    [Header("Max Health Upgrade")]
+    [SerializeField] private float absoluteMaxHealth = 200f;
+
     private float currentHealth;
 
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;
+    public float AbsoluteMaxHealth => absoluteMaxHealth;
 
     public bool IsDead { get; private set; }
+
+    public bool IsMaxHealthUpgraded =>
+        maxHealth >= absoluteMaxHealth;
 
     public event Action<float, float> OnHealthChanged;
     public event Action OnPlayerDied;
@@ -20,6 +27,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         currentHealth = maxHealth;
     }
+
+    // ==========================
+    // DAMAGE
+    // ==========================
 
     public void TakeDamage(float amount)
     {
@@ -42,16 +53,17 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             $"Vida: {currentHealth}/{maxHealth}"
         );
 
-        OnHealthChanged?.Invoke(
-            currentHealth,
-            maxHealth
-        );
+        NotifyHealthChanged();
 
         if (currentHealth <= 0f)
         {
             Die();
         }
     }
+
+    // ==========================
+    // HEAL
+    // ==========================
 
     public void Heal(float amount)
     {
@@ -69,11 +81,71 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             maxHealth
         );
 
+        NotifyHealthChanged();
+    }
+
+    // ==========================
+    // MAX HEALTH UPGRADE
+    // ==========================
+
+    public bool IncreaseMaxHealth(float amount)
+    {
+        if (IsDead)
+            return false;
+
+        if (amount <= 0f)
+            return false;
+
+        if (maxHealth >= absoluteMaxHealth)
+            return false;
+
+        float previousMaxHealth = maxHealth;
+
+        maxHealth += amount;
+
+        maxHealth = Mathf.Clamp(
+            maxHealth,
+            0f,
+            absoluteMaxHealth
+        );
+
+        float realIncrease =
+            maxHealth - previousMaxHealth;
+
+        
+        currentHealth += realIncrease;
+
+        currentHealth = Mathf.Clamp(
+            currentHealth,
+            0f,
+            maxHealth
+        );
+
+        Debug.Log(
+            $"Vida máxima aumentada: " +
+            $"{previousMaxHealth} → {maxHealth}"
+        );
+
+        NotifyHealthChanged();
+
+        return true;
+    }
+
+    // ==========================
+    // EVENTS
+    // ==========================
+
+    private void NotifyHealthChanged()
+    {
         OnHealthChanged?.Invoke(
             currentHealth,
             maxHealth
         );
     }
+
+    // ==========================
+    // DEATH
+    // ==========================
 
     private void Die()
     {
