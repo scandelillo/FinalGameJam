@@ -1,10 +1,19 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
     [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
+
+    [Header("Damage Feedback")]
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private float damageFlashDuration = 0.1f;
+    [SerializeField] private Color damageColor = Color.red;
+
+    private Color originalColor;
+    private Coroutine damageFlashCoroutine;
 
     private float currentHealth;
 
@@ -19,6 +28,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private void Awake()
     {
         currentHealth = maxHealth;
+
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        originalColor = spriteRenderer.color;
     }
 
     public void TakeDamage(float amount)
@@ -47,10 +61,28 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             maxHealth
         );
 
+        FlashDamage();
+
         if (currentHealth <= 0f)
         {
             Die();
         }
+    }
+
+    private void FlashDamage()
+    {
+        if (damageFlashCoroutine != null)
+            StopCoroutine(damageFlashCoroutine);
+
+        damageFlashCoroutine = StartCoroutine(DamageFlashCoroutine());
+    }
+
+    private IEnumerator DamageFlashCoroutine()
+    {
+        spriteRenderer.color = damageColor;
+        yield return new WaitForSeconds(damageFlashDuration);
+        spriteRenderer.color = originalColor;
+        damageFlashCoroutine = null;
     }
 
     public void Heal(float amount)
