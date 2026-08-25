@@ -8,5 +8,7 @@ public enum ZoneId
     HabitacionInicial,
     SalaSeguridad,
     Oficinas,
-    ZonaTienda
+    ZonaTienda,
+    SalaArmas,
+    SalaEstar
 }
