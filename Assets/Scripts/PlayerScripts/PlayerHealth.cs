@@ -7,6 +7,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
 
+    [Header("Max Health Upgrade")]
+    [SerializeField] private float absoluteMaxHealth = 200f;
+
     [Header("Damage Feedback")]
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private float damageFlashDuration = 0.1f;
@@ -19,20 +22,31 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;
+    public float AbsoluteMaxHealth => absoluteMaxHealth;
 
     public bool IsDead { get; private set; }
 
+    public bool IsMaxHealthUpgraded =>
+        maxHealth >= absoluteMaxHealth;
+
     public event Action<float, float> OnHealthChanged;
     public event Action OnPlayerDied;
+    public event Action<float> OnPlayerDamaged;
+
 
     private void Awake()
     {
         currentHealth = maxHealth;
 
         if (spriteRenderer == null)
+        {
             spriteRenderer = GetComponent<SpriteRenderer>();
+        }
 
-        originalColor = spriteRenderer.color;
+        if (spriteRenderer != null)
+        {
+            originalColor = spriteRenderer.color;
+        }
     }
 
     public void TakeDamage(float amount)
@@ -56,10 +70,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             $"Vida: {currentHealth}/{maxHealth}"
         );
 
-        OnHealthChanged?.Invoke(
-            currentHealth,
-            maxHealth
-        );
+        NotifyHealthChanged();
+
+        OnPlayerDamaged?.Invoke(amount);
 
         FlashDamage();
 
@@ -69,21 +82,39 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         }
     }
 
+
     private void FlashDamage()
     {
-        if (damageFlashCoroutine != null)
-            StopCoroutine(damageFlashCoroutine);
+        if (spriteRenderer == null)
+            return;
 
-        damageFlashCoroutine = StartCoroutine(DamageFlashCoroutine());
+        if (damageFlashCoroutine != null)
+        {
+            StopCoroutine(damageFlashCoroutine);
+        }
+
+        damageFlashCoroutine =
+            StartCoroutine(
+                DamageFlashCoroutine()
+            );
     }
 
     private IEnumerator DamageFlashCoroutine()
     {
         spriteRenderer.color = damageColor;
-        yield return new WaitForSeconds(damageFlashDuration);
+
+        yield return new WaitForSeconds(
+            damageFlashDuration
+        );
+
         spriteRenderer.color = originalColor;
+
         damageFlashCoroutine = null;
     }
+
+    // ==========================
+    // HEAL
+    // ==========================
 
     public void Heal(float amount)
     {
@@ -101,11 +132,70 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             maxHealth
         );
 
+        NotifyHealthChanged();
+    }
+
+    // ==========================
+    // MAX HEALTH UPGRADE
+    // ==========================
+
+    public bool IncreaseMaxHealth(float amount)
+    {
+        if (IsDead)
+            return false;
+
+        if (amount <= 0f)
+            return false;
+
+        if (maxHealth >= absoluteMaxHealth)
+            return false;
+
+        float previousMaxHealth =
+            maxHealth;
+
+        maxHealth += amount;
+
+        maxHealth = Mathf.Clamp(
+            maxHealth,
+            0f,
+            absoluteMaxHealth
+        );
+
+        float realIncrease =
+            maxHealth - previousMaxHealth;
+
+        // También ganamos esa misma cantidad
+        // como vida actual.
+        currentHealth += realIncrease;
+
+        currentHealth = Mathf.Clamp(
+            currentHealth,
+            0f,
+            maxHealth
+        );
+
+        Debug.Log(
+            $"Vida máxima aumentada: " +
+            $"{previousMaxHealth} → {maxHealth}"
+        );
+
+        NotifyHealthChanged();
+
+        return true;
+    }
+
+
+    private void NotifyHealthChanged()
+    {
         OnHealthChanged?.Invoke(
             currentHealth,
             maxHealth
         );
     }
+
+    // ==========================
+    // DEATH
+    // ==========================
 
     private void Die()
     {
