@@ -59,6 +59,7 @@ public class DoorUnlockable : MonoBehaviour
             return;
         }
 
+        AudioManager.Instance.sfxManager.PlayDoorSound();
         isOpen = true;
         physicalBlocker.enabled = false;
 
