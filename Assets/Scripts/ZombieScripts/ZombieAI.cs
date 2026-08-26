@@ -122,9 +122,11 @@ public class ZombieAI : MonoBehaviour
 
         if (animator != null)
             animator.SetTrigger("Attack");
+        
 
         if (player.TryGetComponent(out IDamageable damageable))
             damageable.TakeDamage(zombieController.Damage);
+
     }
 
     private void UpdateSpriteDirection()

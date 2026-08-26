@@ -12,6 +12,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashDuration = 0.15f;
     [SerializeField] private float dashCooldown = 0.5f;
 
+    [Header("Recoil")]
+    [SerializeField] private float recoilRecoverySpeed = 8f;
+    [SerializeField] private float maxRecoilSpeed = 2f;
+
     [Header("Animation")]
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -21,11 +25,14 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 moveInput;
     private Vector2 facingDirection = Vector2.down;
 
-    // Dash
+    
     private bool isDashing;
     private Vector2 dashDirection;
     private float dashTimeRemaining;
     private float dashCooldownRemaining;
+
+    // Recoil
+    private Vector2 recoilVelocity;
 
     public Vector2 FacingDirection => facingDirection;
     public bool IsDashing => isDashing;
@@ -48,16 +55,20 @@ public class PlayerMovement : MonoBehaviour
             UpdateFacingDirection();
         }
 
-        // No actualizamos Speed durante el dash.
         if (animator != null && !isDashing)
         {
-            animator.SetFloat("Speed", moveInput.magnitude);
+            animator.SetFloat(
+                "Speed",
+                moveInput.magnitude
+            );
         }
     }
 
     private void FixedUpdate()
     {
         UpdateDashCooldown();
+
+        UpdateRecoil();
 
         if (isDashing)
         {
@@ -69,16 +80,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // ==========================
-    // INPUT
-    // ==========================
-
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
 
-        // Evita que diagonal sea más rápida.
-        moveInput = Vector2.ClampMagnitude(moveInput, 1f);
+        moveInput = Vector2.ClampMagnitude(
+            moveInput,
+            1f
+        );
     }
 
     public void OnDash(InputValue value)
@@ -95,13 +104,67 @@ public class PlayerMovement : MonoBehaviour
         StartDash();
     }
 
-    // ==========================
-    // MOVEMENT
-    // ==========================
-
     private void Move()
     {
-        rb.linearVelocity = moveInput * moveSpeed;
+        Vector2 movementVelocity =
+            moveInput * moveSpeed;
+
+        rb.linearVelocity =
+            movementVelocity +
+            recoilVelocity;
+    }
+
+    // ==========================
+    // RECOIL
+    // ==========================
+
+    public void ApplyRecoil(
+        Vector2 shotDirection,
+        float recoilForce)
+    {
+        if (isDashing)
+            return;
+
+        if (recoilForce <= 0f)
+            return;
+
+        if (shotDirection.sqrMagnitude < 0.001f)
+            return;
+
+        Vector2 recoilDirection =
+            -shotDirection.normalized;
+
+        recoilVelocity +=
+            recoilDirection * recoilForce;
+
+        if (
+            recoilVelocity.magnitude >
+            maxRecoilSpeed
+        )
+        {
+            recoilVelocity =
+                recoilVelocity.normalized *
+                maxRecoilSpeed;
+        }
+    }
+
+    private void UpdateRecoil()
+    {
+        if (isDashing)
+        {
+            recoilVelocity =
+                Vector2.zero;
+
+            return;
+        }
+
+        recoilVelocity =
+            Vector2.MoveTowards(
+                recoilVelocity,
+                Vector2.zero,
+                recoilRecoverySpeed *
+                Time.fixedDeltaTime
+            );
     }
 
     // ==========================
@@ -112,32 +175,50 @@ public class PlayerMovement : MonoBehaviour
     {
         isDashing = true;
 
-        dashTimeRemaining = dashDuration;
-        dashCooldownRemaining = dashCooldown;
+        dashTimeRemaining =
+            dashDuration;
+
+        dashCooldownRemaining =
+            dashCooldown;
+
+        // El dash cancela cualquier recoil pendiente.
+        recoilVelocity =
+            Vector2.zero;
 
         if (moveInput.sqrMagnitude > 0.01f)
         {
-            dashDirection = moveInput.normalized;
+            dashDirection =
+                moveInput.normalized;
         }
         else
         {
-            dashDirection = facingDirection.normalized;
+            dashDirection =
+                facingDirection.normalized;
         }
 
-        // Conservamos la dirección del movimiento para el dash.
-        facingDirection = Get8Direction(dashDirection);
+        // Conservamos la dirección
+        // del movimiento para el dash.
+        facingDirection =
+            Get8Direction(
+                dashDirection
+            );
 
         if (animator != null)
         {
-            animator.SetBool("IsDashing", true);
+            animator.SetBool(
+                "IsDashing",
+                true
+            );
         }
     }
 
     private void DashMovement()
     {
-        rb.linearVelocity = dashDirection * dashSpeed;
+        rb.linearVelocity =
+            dashDirection * dashSpeed;
 
-        dashTimeRemaining -= Time.fixedDeltaTime;
+        dashTimeRemaining -=
+            Time.fixedDeltaTime;
 
         if (dashTimeRemaining <= 0f)
         {
@@ -149,11 +230,15 @@ public class PlayerMovement : MonoBehaviour
     {
         isDashing = false;
 
-        rb.linearVelocity = Vector2.zero;
+        rb.linearVelocity =
+            Vector2.zero;
 
         if (animator != null)
         {
-            animator.SetBool("IsDashing", false);
+            animator.SetBool(
+                "IsDashing",
+                false
+            );
         }
     }
 
@@ -161,57 +246,64 @@ public class PlayerMovement : MonoBehaviour
     {
         if (dashCooldownRemaining > 0f)
         {
-            dashCooldownRemaining -= Time.fixedDeltaTime;
+            dashCooldownRemaining -=
+                Time.fixedDeltaTime;
         }
     }
-
-    // ==========================
-    // FACING DIRECTION
-    // ==========================
 
     private void UpdateFacingDirection()
     {
         if (moveInput.sqrMagnitude < 0.01f)
             return;
 
-        // Esta dirección se conserva para movimiento/dash.
-        // Ya no controla visualmente el flip del sprite.
-        facingDirection = Get8Direction(moveInput);
+        facingDirection =
+            Get8Direction(
+                moveInput
+            );
     }
 
     // ==========================
     // MOUSE AIM FLIP
     // ==========================
 
-    public void SetAimFacing(Vector2 aimDirection)
+    public void SetAimFacing(
+        Vector2 aimDirection)
     {
         if (spriteRenderer == null)
             return;
 
-        // Los sprites miran hacia la derecha por defecto.
+        // Los sprites miran hacia
+        // la derecha por defecto.
         if (aimDirection.x > 0.01f)
         {
-            spriteRenderer.flipX = false;
+            spriteRenderer.flipX =
+                false;
         }
-        else if (aimDirection.x < -0.01f)
+        else if (
+            aimDirection.x < -0.01f)
         {
-            spriteRenderer.flipX = true;
+            spriteRenderer.flipX =
+                true;
         }
     }
 
-    // ==========================
-    // 8 DIRECTIONS
-    // ==========================
 
-    private Vector2 Get8Direction(Vector2 direction)
+    private Vector2 Get8Direction(
+        Vector2 direction)
     {
         float angle =
-            Mathf.Atan2(direction.y, direction.x)
-            * Mathf.Rad2Deg;
+            Mathf.Atan2(
+                direction.y,
+                direction.x
+            ) * Mathf.Rad2Deg;
 
-        angle = Mathf.Round(angle / 45f) * 45f;
+        angle =
+            Mathf.Round(
+                angle / 45f
+            ) * 45f;
 
-        float radians = angle * Mathf.Deg2Rad;
+        float radians =
+            angle * Mathf.Deg2Rad;
 
         return new Vector2(
             Mathf.Cos(radians),

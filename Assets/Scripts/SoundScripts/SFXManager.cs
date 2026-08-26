@@ -18,6 +18,7 @@ public class SFXManager : MonoBehaviour
     [SerializeField] private AudioClip punchSound;
     [SerializeField] private AudioClip reloadSound;
     [SerializeField] private AudioClip startGameSound;
+    [SerializeField] private AudioClip doorSound;
 
     private void Awake()
     {
@@ -88,23 +89,28 @@ public class SFXManager : MonoBehaviour
     {
         audioSource.PlayOneShot(startGameSound);
     }
+    public void PlayDoorSound()
+    {
+        audioSource.PlayOneShot(doorSound);
+    }
 
-/* para usar los sonidos en código vamos a:
+    /* para usar los sonidos en código vamos a:
 
-AudioManager.Instance.sfxManager.PlayAutomaticShot();
-AudioManager.Instance.sfxManager.PlayGameOver();
-AudioManager.Instance.sfxManager.PlayExplosion();
-AudioManager.Instance.sfxManager.PlayGrenade();
-AudioManager.Instance.sfxManager.PlayGrunt();
-AudioManager.Instance.sfxManager.PlayIndividualShot();
-AudioManager.Instance.sfxManager.PlayMaxHealth();
-AudioManager.Instance.sfxManager.PlayOnClick();
-AudioManager.Instance.sfxManager.PlayPause();
-AudioManager.Instance.sfxManager.PlayPowerUp();
-AudioManager.Instance.sfxManager.PlayPunch();
-AudioManager.Instance.sfxManager.PlayReload();
-AudioManager.Instance.sfxManager.PlayStartGame();
+    AudioManager.Instance.sfxManager.PlayAutomaticShot();
+    AudioManager.Instance.sfxManager.PlayGameOver();
+    AudioManager.Instance.sfxManager.PlayExplosion();
+    AudioManager.Instance.sfxManager.PlayGrenade();
+    AudioManager.Instance.sfxManager.PlayGrunt();
+    AudioManager.Instance.sfxManager.PlayIndividualShot();
+    AudioManager.Instance.sfxManager.PlayMaxHealth();
+    AudioManager.Instance.sfxManager.PlayOnClick();
+    AudioManager.Instance.sfxManager.PlayPause();
+    AudioManager.Instance.sfxManager.PlayPowerUp();
+    AudioManager.Instance.sfxManager.PlayPunch();
+    AudioManager.Instance.sfxManager.PlayReload();
+    AudioManager.Instance.sfxManager.PlayStartGame();
+    AudioManager.Instance.sfxManager.PlayDoorSound();
 
-*/
+    */
 
-}   
+}

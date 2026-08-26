@@ -9,6 +9,9 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Mixer")]
     [SerializeField] private AudioMixer audioMixer;
 
+    [Header("SFX")]
+    public SFXManager sfxManager;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -18,6 +21,9 @@ public class AudioManager : MonoBehaviour
         }
 
         Instance = this;
+
+        if (sfxManager == null)
+            sfxManager = GetComponentInChildren<SFXManager>();
 
         DontDestroyOnLoad(gameObject);
     }
@@ -44,17 +50,17 @@ public class AudioManager : MonoBehaviour
         audioMixer.SetFloat(parameterName, volumeDB);
     }
 
-    public void ToggleMute()    
-    {   
-    isMuted = !isMuted;
+    public void ToggleMute()
+    {
+        isMuted = !isMuted;
 
-    if (isMuted)
-    {
-        audioMixer.SetFloat("MasterVolume", -80f);
-    }
-    else
-    {
-        audioMixer.SetFloat("MasterVolume", 0f);
-    }
+        if (isMuted)
+        {
+            audioMixer.SetFloat("MasterVolume", -80f);
+        }
+        else
+        {
+            audioMixer.SetFloat("MasterVolume", 0f);
+        }
     }
 }

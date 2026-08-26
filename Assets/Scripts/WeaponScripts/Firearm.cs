@@ -1,33 +1,33 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class Firearm : Weapon, IAmmoContainer
 {
-   
+
     [Header("Aim")]
     [SerializeField] private Transform aimPivot;
 
     private SpriteRenderer weaponSpriteRenderer;
 
-   
+    
 
     [Header("Bullet")]
     [SerializeField] private Bullet bulletPrefab;
     [SerializeField] private Transform bulletPoolParent;
     [SerializeField] private int initialBulletPoolSize = 20;
 
-   
+    
 
     [Header("Bullet Stats")]
     [SerializeField] private float bulletDamage = 20f;
     [SerializeField] private float bulletSpeed = 12f;
     [SerializeField] private float bulletLifeTime = 3f;
 
-  
+    
 
     [Header("Fire")]
     [SerializeField] private Transform firePoint;
-
     [SerializeField] private float fireCooldown = 0.2f;
 
     // Respaldo si FirePoint no está asignado.
@@ -35,30 +35,42 @@ public class Firearm : Weapon, IAmmoContainer
 
     
 
-    [Header("Fire Mode")]
+    [Header("Muzzle Flash")]
+    [SerializeField] private Light2D muzzleFlashLight;
+    [SerializeField] private float muzzleFlashDuration = 0.04f;
 
-    // Empieza desactivado:
-    // una pulsación = un disparo.
+    private float muzzleFlashTimer;
+
+    
+
+    [Header("Full Auto Recoil")]
+    [SerializeField] private PlayerMovement playerMovement;
+
+    [SerializeField]
+    private float fullAutoRecoilStrength = 0.8f;
+
+    
+
+    [Header("Fire Mode")]
     [SerializeField] private bool automaticFireUnlocked = false;
 
-   
+    
 
     [Header("Ammo")]
     [SerializeField] private int magazineSize = 6;
     [SerializeField] private int reserveAmmo = 24;
     [SerializeField] private float reloadTime = 1.2f;
 
-   
+    
 
     [Header("Magazine Upgrade")]
     [SerializeField] private int maxMagazineSize = 30;
 
-    
 
     [Header("Collision")]
     [SerializeField] private LayerMask bulletHitLayers;
 
-   
+    
 
     private ObjectPool bulletPool;
 
@@ -68,17 +80,22 @@ public class Firearm : Weapon, IAmmoContainer
 
     private bool isReloading;
 
-   
+    
 
-    public int CurrentAmmo => currentAmmo;
+    public int CurrentAmmo =>
+        currentAmmo;
 
-    public int ReserveAmmo => reserveAmmo;
+    public int ReserveAmmo =>
+        reserveAmmo;
 
-    public int MagazineSize => magazineSize;
+    public int MagazineSize =>
+        magazineSize;
 
-    public int MaxMagazineSize => maxMagazineSize;
+    public int MaxMagazineSize =>
+        maxMagazineSize;
 
-    public bool IsReloading => isReloading;
+    public bool IsReloading =>
+        isReloading;
 
     public bool IsAutomaticFireEnabled =>
         automaticFireUnlocked;
@@ -86,18 +103,42 @@ public class Firearm : Weapon, IAmmoContainer
     public bool IsMagazineMaxed =>
         magazineSize >= maxMagazineSize;
 
-    // ==========================
-    // UNITY
-    // ==========================
-
     private void Awake()
     {
-        currentAmmo = magazineSize;
+        currentAmmo =
+            magazineSize;
 
         if (weaponVisual != null)
         {
             weaponSpriteRenderer =
-                weaponVisual.GetComponentInChildren<SpriteRenderer>();
+                weaponVisual
+                    .GetComponentInChildren<SpriteRenderer>();
+        }
+
+        // Busca automáticamente PlayerMovement.
+        if (playerMovement == null)
+        {
+            playerMovement =
+                GetComponentInParent<PlayerMovement>();
+        }
+
+        if (
+            muzzleFlashLight == null &&
+            firePoint != null
+        )
+        {
+            muzzleFlashLight =
+                firePoint
+                    .GetComponentInChildren<Light2D>(
+                        true
+                    );
+        }
+
+        // Al comenzar la luz debe estar apagada.
+        if (muzzleFlashLight != null)
+        {
+            muzzleFlashLight.enabled =
+                false;
         }
 
         if (bulletPrefab == null)
@@ -109,28 +150,46 @@ public class Firearm : Weapon, IAmmoContainer
             return;
         }
 
-        bulletPool = new ObjectPool(
-            bulletPrefab.gameObject,
-            initialBulletPoolSize,
-            bulletPoolParent
-        );
+        bulletPool =
+            new ObjectPool(
+                bulletPrefab.gameObject,
+                initialBulletPoolSize,
+                bulletPoolParent
+            );
     }
 
     private void Update()
     {
+
         if (fireCooldownRemaining > 0f)
         {
-            fireCooldownRemaining -= Time.deltaTime;
+            fireCooldownRemaining -=
+                Time.deltaTime;
+        }
+
+        if (muzzleFlashTimer > 0f)
+        {
+            muzzleFlashTimer -=
+                Time.deltaTime;
+
+            if (muzzleFlashTimer <= 0f)
+            {
+                if (muzzleFlashLight != null)
+                {
+                    muzzleFlashLight.enabled =
+                        false;
+                }
+            }
         }
     }
 
-    // ==========================
-    // AIM
-    // ==========================
-
-    public override void SetAimDirection(Vector2 direction)
+    public override void SetAimDirection(
+        Vector2 direction)
     {
-        if (direction.sqrMagnitude < 0.001f)
+        if (
+            direction.sqrMagnitude <
+            0.001f
+        )
             return;
 
         if (aimPivot == null)
@@ -158,11 +217,8 @@ public class Firearm : Weapon, IAmmoContainer
         }
     }
 
-    // ==========================
-    // ATTACK
-    // ==========================
-
-    public override void Attack(Vector2 direction)
+    public override void Attack(
+        Vector2 direction)
     {
         if (isReloading)
             return;
@@ -170,7 +226,10 @@ public class Firearm : Weapon, IAmmoContainer
         if (fireCooldownRemaining > 0f)
             return;
 
-        if (direction.sqrMagnitude < 0.001f)
+        if (
+            direction.sqrMagnitude <
+            0.001f
+        )
             return;
 
         if (currentAmmo <= 0)
@@ -187,22 +246,40 @@ public class Firearm : Weapon, IAmmoContainer
         Fire(direction);
     }
 
-    // ==========================
-    // FIRE
-    // ==========================
-
-    private void Fire(Vector2 direction)
+    private void Fire(
+        Vector2 direction)
     {
         fireCooldownRemaining =
             fireCooldown;
 
         currentAmmo--;
 
+        TriggerMuzzleFlash();
+
+        if (automaticFireUnlocked)
+            AudioManager.Instance.sfxManager.PlayIndividualShot();
+        else
+            AudioManager.Instance.sfxManager.PlayIndividualShot();
+
+        // Recoil solamente si Full Auto
+        // está desbloqueado.
+        if (
+            automaticFireUnlocked &&
+            playerMovement != null
+        )
+        {
+            playerMovement.ApplyRecoil(
+                direction,
+                fullAutoRecoilStrength
+            );
+        }
+
         Vector2 spawnPosition =
             firePoint != null
                 ? (Vector2)firePoint.position
                 : (Vector2)transform.position
-                    + direction * bulletSpawnDistance;
+                    + direction *
+                    bulletSpawnDistance;
 
         GameObject bulletObject =
             bulletPool.Get(
@@ -243,6 +320,22 @@ public class Firearm : Weapon, IAmmoContainer
     }
 
     // ==========================
+    // MUZZLE FLASH
+    // ==========================
+
+    private void TriggerMuzzleFlash()
+    {
+        if (muzzleFlashLight == null)
+            return;
+
+        muzzleFlashLight.enabled =
+            true;
+
+        muzzleFlashTimer =
+            muzzleFlashDuration;
+    }
+
+    // ==========================
     // AUTOMATIC FIRE UPGRADE
     // ==========================
 
@@ -253,7 +346,8 @@ public class Firearm : Weapon, IAmmoContainer
             return false;
         }
 
-        automaticFireUnlocked = true;
+        automaticFireUnlocked =
+            true;
 
         Debug.Log(
             $"{name}: AUTOMATIC FIRE desbloqueado."
@@ -266,47 +360,53 @@ public class Firearm : Weapon, IAmmoContainer
     // MAGAZINE UPGRADE
     // ==========================
 
-    public bool IncreaseMagazineSize(int amount)
+    public bool IncreaseMagazineSize(
+        int amount)
     {
         if (amount <= 0)
             return false;
 
-        if (magazineSize >= maxMagazineSize)
+        if (
+            magazineSize >=
+            maxMagazineSize
+        )
             return false;
 
         int previousMagazineSize =
             magazineSize;
 
-        magazineSize += amount;
+        magazineSize +=
+            amount;
 
-        magazineSize = Mathf.Clamp(
-            magazineSize,
-            1,
-            maxMagazineSize
-        );
+        magazineSize =
+            Mathf.Clamp(
+                magazineSize,
+                1,
+                maxMagazineSize
+            );
 
         int realIncrease =
-            magazineSize - previousMagazineSize;
+            magazineSize -
+            previousMagazineSize;
 
-        currentAmmo += realIncrease;
+        currentAmmo +=
+            realIncrease;
 
-        currentAmmo = Mathf.Clamp(
-            currentAmmo,
-            0,
-            magazineSize
-        );
+        currentAmmo =
+            Mathf.Clamp(
+                currentAmmo,
+                0,
+                magazineSize
+            );
 
         Debug.Log(
             $"Cargador aumentado: " +
-            $"{previousMagazineSize} → {magazineSize}"
+            $"{previousMagazineSize} → " +
+            $"{magazineSize}"
         );
 
         return true;
     }
-
-    // ==========================
-    // RELOAD
-    // ==========================
 
     public override void Reload()
     {
@@ -318,12 +418,16 @@ public class Firearm : Weapon, IAmmoContainer
         if (isReloading)
             return;
 
-        if (currentAmmo >= magazineSize)
+        if (
+            currentAmmo >=
+            magazineSize
+        )
             return;
 
         if (reserveAmmo <= 0)
             return;
 
+        AudioManager.Instance.sfxManager.PlayReload();
         StartCoroutine(
             ReloadCoroutine()
         );
@@ -331,16 +435,21 @@ public class Firearm : Weapon, IAmmoContainer
 
     private IEnumerator ReloadCoroutine()
     {
-        isReloading = true;
+        isReloading =
+            true;
 
-        Debug.Log("Reloading...");
-
-        yield return new WaitForSeconds(
-            reloadTime
+        Debug.Log(
+            "Reloading..."
         );
 
+        yield return
+            new WaitForSeconds(
+                reloadTime
+            );
+
         int missingAmmo =
-            magazineSize - currentAmmo;
+            magazineSize -
+            currentAmmo;
 
         int amountToReload =
             Mathf.Min(
@@ -354,7 +463,8 @@ public class Firearm : Weapon, IAmmoContainer
         reserveAmmo -=
             amountToReload;
 
-        isReloading = false;
+        isReloading =
+            false;
 
         Debug.Log(
             $"Reloaded: " +
@@ -362,16 +472,14 @@ public class Firearm : Weapon, IAmmoContainer
         );
     }
 
-    // ==========================
-    // AMMO PICKUP / SHOP
-    // ==========================
-
-    public void AddReserveAmmo(int amount)
+    public void AddReserveAmmo(
+        int amount)
     {
         if (amount <= 0)
             return;
 
-        reserveAmmo += amount;
+        reserveAmmo +=
+            amount;
 
         Debug.Log(
             $"+{amount} munición de reserva " +
