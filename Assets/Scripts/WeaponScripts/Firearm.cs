@@ -256,6 +256,11 @@ public class Firearm : Weapon, IAmmoContainer
 
         TriggerMuzzleFlash();
 
+        if (automaticFireUnlocked)
+            AudioManager.Instance.sfxManager.PlayIndividualShot();
+        else
+            AudioManager.Instance.sfxManager.PlayIndividualShot();
+
         // Recoil solamente si Full Auto
         // está desbloqueado.
         if (
@@ -422,6 +427,7 @@ public class Firearm : Weapon, IAmmoContainer
         if (reserveAmmo <= 0)
             return;
 
+        AudioManager.Instance.sfxManager.PlayReload();
         StartCoroutine(
             ReloadCoroutine()
         );

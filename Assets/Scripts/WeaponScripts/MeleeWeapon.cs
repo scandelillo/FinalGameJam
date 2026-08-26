@@ -86,12 +86,14 @@ public class MeleeWeapon : Weapon
         // Guardamos la dirección del ataque.
         // El daño se aplicará después mediante
         // el Animation Event.
+
+
         attackDirection = direction.normalized;
 
         currentAimDirection = attackDirection;
 
         cooldownRemaining = attackCooldown;
-
+        AudioManager.Instance.sfxManager.PlayPunch();
         // Solo iniciamos la animación.
         // El daño NO se aplica aquí.
         if (animator != null)
@@ -106,6 +108,7 @@ public class MeleeWeapon : Weapon
     // exactamente en el frame donde ocurre el impacto.
     public void PerformMeleeAttack()
     {
+        
         PerformMeleeAttack(attackDirection);
     }
 

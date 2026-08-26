@@ -57,6 +57,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (amount <= 0f)
             return;
 
+        
         currentHealth -= amount;
 
         currentHealth = Mathf.Clamp(
@@ -75,6 +76,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         OnPlayerDamaged?.Invoke(amount);
 
         FlashDamage();
+        AudioManager.Instance.sfxManager.PlayGrunt();
 
         if (currentHealth <= 0f)
         {
@@ -133,6 +135,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         );
 
         NotifyHealthChanged();
+        AudioManager.Instance.sfxManager.PlayMaxHealth();
     }
 
     // ==========================
@@ -207,5 +210,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         Debug.Log("MUERTO");
 
         OnPlayerDied?.Invoke();
+        AudioManager.Instance.sfxManager.PlayGameOver();
     }
 }
