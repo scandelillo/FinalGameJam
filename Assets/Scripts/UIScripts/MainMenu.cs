@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
@@ -19,5 +20,10 @@ public class MainMenu : MonoBehaviour
    
     menu.SetActive(true);
    }
+
+    public void switchScenes (string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
 
 }
